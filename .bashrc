@@ -151,4 +151,4 @@ export NVM_DIR="$HOME/.nvm"
 alias kb="cd Documents/tiddlywiki_folders && tiddlywiki kbase/ --listen"
 . "$HOME/.cargo/env"
 
-alias ide="bash ide.sh"
+alias ide="bash ~/.dotfiles/ide.sh"
