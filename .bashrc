@@ -149,3 +149,6 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 alias kb="cd Documents/tiddlywiki_folders && tiddlywiki kbase/ --listen"
+. "$HOME/.cargo/env"
+
+alias ide="bash ide.sh"
