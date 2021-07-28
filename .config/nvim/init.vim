@@ -1,12 +1,29 @@
 " Specify a directory for plugins
+
 call plug#begin('~/.vim/plugged')
-
 set clipboard+=unnamedplus
+let g:clipboard = {
+  \   'name': 'xclip-xfce4-clipman',
+  \   'copy': {
+  \      '+': 'xclip -selection clipboard',
+  \      '*': 'xclip -selection clipboard',
+  \    },
+  \   'paste': {
+  \      '+': 'xclip -selection clipboard -o',
+  \      '*': 'xclip -selection clipboard -o',
+  \   },
+  \   'cache_enabled': 1,
+  \ }
 
+
+Plug 'luochen1990/rainbow'
+let g:rainbow_active = 1 "set to 0 if you want to enable it later via :RainbowToggle
 "markdown plugin"
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' }
 
+:hi Directory guifg=#FF0000 ctermfg=red
 
+Plug 'shaunsingh/solarized.nvim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'scrooloose/nerdtree'
 "Plug 'tsony-tsonev/nerdtree-git-plugin'
@@ -82,7 +99,7 @@ set shiftwidth=2
 " always uses spaces instead of tab characters
 set expandtab
 
-colorscheme nord
+colorscheme solarized Light
 
 " sync open file with NERDTree
 " " Check if NERDTree is open or active
