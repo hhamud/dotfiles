@@ -99,7 +99,7 @@ set shiftwidth=2
 " always uses spaces instead of tab characters
 set expandtab
 
-colorscheme solarized Light
+colorscheme solarized
 
 " sync open file with NERDTree
 " " Check if NERDTree is open or active
