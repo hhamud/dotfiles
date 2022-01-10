@@ -30,7 +30,7 @@
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/org/")
-
+(setq org-default-notes-file "~/org/agenda.org")
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type t)
@@ -52,7 +52,7 @@
 ;;
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
-(setq org-roam-directory "~/SlipBox")
+
 
 ;; dashboard configuation
 (use-package dashboard
@@ -79,13 +79,58 @@
 
 (setq dashboard-items '((recents  . 5)
                         (projects . 5)
+                        (agenda . 10)
                         ))
 
 ;; icons for the dashboard
 (setq dashboard-set-heading-icons t)
 (setq dashboard-set-file-icons t)
 
-;; dashboard
-(add-to-list 'dashboard-items '(agenda) t)
-(setq dashboard-week-agenda t)
-(setq dashboard-filter-agenda-entry 'dashboard-no-filter-agenda)
+(after! org
+(setq org-capture-templates '(
+  ("t" "todo" entry (file+headline "~/org/agenda.org" "Tasks:")
+    "** TODO %?\n   DEADLINE: <%<%Y-%m-%d %a>>\n"
+    :empty-lines 1)
+  ("p" "Project" entry (file+headline "~/org/agenda.org" "Projects:")
+    "** PROJ %?\n :PROPERTIES:\n :CREATED: <%<%Y-%m-%d %a>>\n :END:\n   DEADLINE: <%<%Y-%m-%d %a>>\n "
+    :empty-lines 1)))
+
+(setq org-todo-keywords        ; This overwrites the default Doom org-todo-keywords
+        '((sequence
+           "TODO(t)"           ; A task that is ready to be tackled
+           "BLOG(b)"           ; Blog writing assignments
+           "PROJ(p)"           ; A project that contains other tasks
+           "WAIT(w)"           ; Something is holding up this task
+           "PROG(r)"
+           "|"                 ; The pipe necessary to separate "active" states and "inactive" states
+           "DONE(d)"           ; Task has been completed
+           "CANCELLED(c)" )))  ; Task has been cancelled
+
+
+(setq org-roam-directory "~/org/SlipBox")
+;;source code block syntax highlighting
+(setq org-src-fontify-natively t
+    org-src-tab-acts-natively t
+    org-confirm-babel-evaluate nil
+    org-edit-src-content-indentation 0)
+)
+
+
+;; doom emacs fonts
+(setq doom-font (font-spec :family "Source Code Pro" :size 15)
+      doom-variable-pitch-font (font-spec :family "EtBembo" :size 18)
+      doom-big-font (font-spec :family "Source Code Pro" :size 24)
+      )
+(after! doom-themes
+  (setq doom-themes-enable-bold t
+        doom-themes-enable-italic t))
+(custom-set-faces!
+  '(font-lock-comment-face :slant italic)
+  '(font-lock-keyword-face :slant italic))
+
+(use-package! mixed-pitch
+  :hook (org-mode . variable-pitch-mode)
+  :config
+  (setq mixed-pitch-set-heigth t)
+  ;;(set-face-attribute 'variable-pitch nil :height 1.3)
+  )
