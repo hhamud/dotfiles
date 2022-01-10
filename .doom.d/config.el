@@ -86,12 +86,20 @@
 (setq dashboard-set-heading-icons t)
 (setq dashboard-set-file-icons t)
 
+;; custom function to create an org file in ~/org/projects.
+  (defun hamza/create-notes-file ()
+    (interactive)
+    (let ((name (read-string "Filename: ")))
+      (expand-file-name (format "%s.org"
+                                  name) "~/org/projects/")))
+
 (after! org
 (setq org-capture-templates '(
   ("t" "todo" entry (file+headline "~/org/agenda.org" "Tasks:")
     "** TODO %?\n   DEADLINE: <%<%Y-%m-%d %a>>\n"
     :empty-lines 1)
-  ("p" "Project" entry (file+headline "~/org/agenda.org" "Projects:")
+  ("p" "Project" entry
+   (file hamza/create-notes-file)
     "** PROJ %?\n :PROPERTIES:\n :CREATED: <%<%Y-%m-%d %a>>\n :END:\n   DEADLINE: <%<%Y-%m-%d %a>>\n "
     :empty-lines 1)))
 
