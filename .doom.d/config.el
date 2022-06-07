@@ -4,35 +4,7 @@
 ;; sync' after modifying this file!
 
 
-;; Some functionality uses this to identify you, e.g. GPG configuration, email
-;; clients, file templates and snippets.
-(setq user-full-name "John Doe"
-      user-mail-address "john@doe.com")
-
-;; Doom exposes five (optional) variables for controlling fonts in Doom. Here
-;; are the three important ones:
-;;
-;; + `doom-font'
-;; + `doom-variable-pitch-font'
-;; + `doom-big-font' -- used for `doom-big-font-mode'; use this for
-;;   presentations or streaming.
-;;
-;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
-;; font string. You generally only need these two:
-;; (setq doom-font (font-spec :family "monospace" :size 12 :weight 'semi-light)
-;;       doom-variable-pitch-font (font-spec :family "sans" :size 13))
-
-;; There are two ways to load a theme. Both assume the theme is installed and
-;; available. You can either set `doom-theme' or manually load a theme with the
-;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-one)
-
-;; If you use `org' and don't want your org files in the default location below,
-;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/org/")
-(setq org-default-notes-file "~/org/agenda.org")
-;; This determines the style of line numbers in effect. If set to `nil', line
-;; numbers are disabled. For relative line numbers, set this to `relative'.
+;; Some functionality uses this to identify you, e.g. GPGmbers, set this to `relative'.
 (setq display-line-numbers-type t)
 
 
@@ -100,7 +72,7 @@
     :empty-lines 1)
   ("p" "Project" entry
    (file hamza/create-notes-file)
-    "** PROJ %?\n :PROPERTIES:\n :CREATED: <%<%Y-%m-%d %a>>\n :END:\n   DEADLINE: <%<%Y-%m-%d %a>>\n "
+    "* #+TITLE: %? \n #+AUTHOR: \n  #+CREATED: <%<%Y-%m-%d %a>>\n   DEADLINE: <%<%Y-%m-%d %a>>\n "
     :empty-lines 1)))
 
 (setq org-todo-keywords        ; This overwrites the default Doom org-todo-keywords
@@ -116,6 +88,12 @@
 
 
 (setq org-roam-directory "~/org/SlipBox")
+(setq org-roam-file-extensions '("org" "md"))
+(md-roam-mode 1) ; md-roam-mode must be active before org-roam-db-sync
+(setq md-roam-file-extension "md") ; default "md". Specify an extension such as "markdown"
+(org-roam-db-autosync-mode 1) ; autosync-mode triggers db-sync. md-roam-mode must be already active
+
+
 ;;source code block syntax highlighting
 (setq org-src-fontify-natively t
     org-src-tab-acts-natively t
@@ -142,3 +120,33 @@
   (setq mixed-pitch-set-heigth t)
   ;;(set-face-attribute 'variable-pitch nil :height 1.3)
   )
+(use-package! websocket
+    :after org-roam)
+
+(use-package! org-roam-ui
+    :after org-roam ;; or :after org
+;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
+;;         a hookable mode anymore, you're advised to pick something yourself
+;;         if you don't care about startup time, use
+;;  :hook (after-init . org-roam-ui-mode)
+    :config
+    (setq org-roam-ui-sync-theme t
+          org-roam-ui-follow t
+          org-roam-ui-update-on-save t
+          org-roam-ui-open-on-start t))
+
+
+(use-package! md-roam ; load immediately, before org-roam
+  :config
+  (setq md-roam-file-extension-single "md"))
+    ;you can omit this if md, which is the default.
+
+
+(defun bms/org-roam-rg-search ()
+  "Search org-roam directory using consult-ripgrep. With live-preview."
+  (interactive)
+  (let ((consult-ripgrep-command "rg --null --ignore-case --type org --line-buffered --color=always --max-columns=500 --no-heading --line-number . -e ARG OPTS"))
+    (consult-ripgrep org-roam-directory)))
+(global-set-key (kbd "C-c rr") 'bms/org-roam-rg-search)
+
+
