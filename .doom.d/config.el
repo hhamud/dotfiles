@@ -27,12 +27,12 @@
 
 
 ;; dashboard configuation
-(use-package dashboard
-  :ensure t
-  :config
-  (dashboard-setup-startup-hook))
+;;(use-package dashboard
+  ;;:ensure t
+  ;;:config
+  ;;(dashboard-setup-startup-hook))
 
-(setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+;;(setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
 
 ;; Set the title
 (setq dashboard-banner-logo-title "Welcome to Emacs Dashboard")
@@ -58,16 +58,9 @@
 (setq dashboard-set-heading-icons t)
 (setq dashboard-set-file-icons t)
 
-;; custom function to create an org file in ~/org/projects.
-  (defun hamza/create-notes-file ()
-    (interactive)
-    (let ((name (read-string "Filename: ")))
-      (expand-file-name (format "%s.org"
-                                  name) "~/org/projects/")))
-
 (after! org
 (setq org-capture-templates '(
-  ("t" "todo" entry (file+headline "~/org/agenda.org" "Tasks:")
+  ("t" "todo" entry (file+headline "~/Documents/org/agenda.org" "Tasks:")
     "** TODO %?\n   DEADLINE: <%<%Y-%m-%d %a>>\n"
     :empty-lines 1)
   ("p" "Project" entry
@@ -84,10 +77,12 @@
            "PROG(r)"
            "|"                 ; The pipe necessary to separate "active" states and "inactive" states
            "DONE(d)"           ; Task has been completed
+           "INACTIVE(i)"       ; Projects that have yet to be started
            "CANCELLED(c)" )))  ; Task has been cancelled
 
 
-(setq org-roam-directory "~/org/SlipBox")
+(setq org-agenda-files (directory-files-recursively "~/Documents/org/" "\\.org$"))
+(setq org-roam-directory "~/Documents/org/SlipBox")
 (setq org-roam-file-extensions '("org" "md"))
 (md-roam-mode 1) ; md-roam-mode must be active before org-roam-db-sync
 (setq md-roam-file-extension "md") ; default "md". Specify an extension such as "markdown"
@@ -139,14 +134,40 @@
 (use-package! md-roam ; load immediately, before org-roam
   :config
   (setq md-roam-file-extension-single "md"))
-    ;you can omit this if md, which is the default.
 
 
-(defun bms/org-roam-rg-search ()
-  "Search org-roam directory using consult-ripgrep. With live-preview."
+
+(defun markdown-string-block()
+  "Creates yaml template for md-roam"
   (interactive)
-  (let ((consult-ripgrep-command "rg --null --ignore-case --type org --line-buffered --color=always --max-columns=500 --no-heading --line-number . -e ARG OPTS"))
-    (consult-ripgrep org-roam-directory)))
-(global-set-key (kbd "C-c rr") 'bms/org-roam-rg-search)
+  (insert (format "--- \ntitle: \nid: %s \n---" (shell-command-to-string "uuidgen"))))
 
 
+(defun insert-file-name (file &optional relativep)
+  "Read file name and insert it at point.
+With a prefix argument, insert only the non-directory part."
+(interactive
+ (list (read-file-name "File: " default-directory)))
+  (when relativep (setq file  (file-name-nondirectory file)))
+  (format "%s" file))
+
+
+
+(defun insert-clipboard-image-to-buffer (title)
+  "Finds the corresponding image from the file."
+  (interactive "stitle of image: ")
+  (shell-command "bash ~/Documents/Scripts/pasteImage.sh")
+  (insert (concat "![ "(file-relative-name title) "](" (call-interactively 'insert-file-name) ")")))
+
+
+(define-key markdown-mode-map (kbd "C-c u") 'insert-clipboard-image-to-buffer)
+(define-key markdown-mode-map (kbd "C-c mm") 'markdown-string-block)
+
+
+;; notdeft
+(add-to-list 'load-path "~/notdeft")
+(add-to-list 'load-path "~/notdeft/extras")
+(load "notdeft-example")
+(setq notdeft-directories '("~/Documents/org/SlipBox/"))
+(setq notdeft-extension "md")
+(setq notdeft-secondary-extensions '("md" "org" "txt"))

@@ -141,14 +141,18 @@ ex ()
 
 export PATH=$PATH:~/bin/todo.txt_cli-2.11.0/
 
-alias t="todo.sh"
+
 
 BROWSER=/usr/share/applications/firefox
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
+
+
+# alias
+alias pasteimage="bash ~/Documents/PythonScripts/pasteImage.sh"
+alias t="todo.sh"
 alias kb="cd Documents/tiddlywiki_folders && tiddlywiki kbase/ --listen"
 . "$HOME/.cargo/env"
-
 alias ide="bash ~/.dotfiles/ide.sh"
