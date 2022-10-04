@@ -61,30 +61,22 @@
 (after! org
 (setq org-agenda-custom-commands
       '(("g" "Get Things Done (GTD)"
-         ((agenda ""
-                  ((org-agenda-skip-function
-                    '(org-agenda-skip-entry-if 'deadline))
-                   (org-deadline-warning-days 0)
-                   (org-agenda-span 7)
-                   ))
-          (todo "NEXT|INPROGRESS"
+         ((todo "NEXT|INPROGRESS"
                 ((org-agenda-skip-function
                   '(org-agenda-skip-entry-if 'deadline))
                  (org-agenda-prefix-format "  %i %-12:c [%e] ")
                  (org-agenda-overriding-header "\nTasks\n")))
-          (agenda nil
+          (agenda ""
                   ((org-agenda-entry-types '(:deadline))
-                   (org-agenda-format-date "")
                    (org-deadline-warning-days 7)
                    (org-agenda-skip-function
                     '(org-agenda-skip-entry-if 'notregexp "\\* TODO"))
-                   (org-agenda-overriding-header "\nDeadlines")))
-          (tags-todo "agenda"
-                     ((org-agenda-prefix-format "  %?-12t% s")
-                      (org-agenda-overriding-header "\nInbox\n")))
+                   (org-agenda-overriding-header "\nDeadlines\n")))
           (tags "CLOSED>=\"<today>\""
-                ((org-agenda-overriding-header "\nCompleted today\n")))))))
+                ((org-agenda-overriding-header "\nCompleted Today\n")))))))
 
+
+(setq org-archive-location "~/Documents/org/projects/archive/%s_archive::")
 
 (setq org-capture-templates '(
   ("t" "todo" entry (file+headline "~/Documents/org/agenda.org" "Tasks:")
@@ -107,6 +99,7 @@
 (setq org-log-done 'time)
 
 (setq org-agenda-files (directory-files-recursively "~/Documents/org/" "\\.org$"))
+(setq org-agenda-archives-mode t)
 (setq org-roam-directory "~/Documents/org/SlipBox")
 (setq org-roam-file-extensions '("org" "md"))
 (require 'md-roam)
