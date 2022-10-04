@@ -53,3 +53,6 @@
 
 (package! md-roam
   :recipe (:host github :repo "nobiot/md-roam"))
+
+(package! sway-mode
+  :recipe (:host github :repo "hhamud/sway-mode" :files ("sway-mode.el")))

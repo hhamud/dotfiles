@@ -59,31 +59,57 @@
 (setq dashboard-set-file-icons t)
 
 (after! org
+(setq org-agenda-custom-commands
+      '(("g" "Get Things Done (GTD)"
+         ((agenda ""
+                  ((org-agenda-skip-function
+                    '(org-agenda-skip-entry-if 'deadline))
+                   (org-deadline-warning-days 0)
+                   (org-agenda-span 7)
+                   ))
+          (todo "NEXT|INPROGRESS"
+                ((org-agenda-skip-function
+                  '(org-agenda-skip-entry-if 'deadline))
+                 (org-agenda-prefix-format "  %i %-12:c [%e] ")
+                 (org-agenda-overriding-header "\nTasks\n")))
+          (agenda nil
+                  ((org-agenda-entry-types '(:deadline))
+                   (org-agenda-format-date "")
+                   (org-deadline-warning-days 7)
+                   (org-agenda-skip-function
+                    '(org-agenda-skip-entry-if 'notregexp "\\* TODO"))
+                   (org-agenda-overriding-header "\nDeadlines")))
+          (tags-todo "agenda"
+                     ((org-agenda-prefix-format "  %?-12t% s")
+                      (org-agenda-overriding-header "\nInbox\n")))
+          (tags "CLOSED>=\"<today>\""
+                ((org-agenda-overriding-header "\nCompleted today\n")))))))
+
+
 (setq org-capture-templates '(
   ("t" "todo" entry (file+headline "~/Documents/org/agenda.org" "Tasks:")
     "** TODO %?\n   DEADLINE: <%<%Y-%m-%d %a>>\n"
     :empty-lines 1)
-  ("p" "Project" entry
-   (file hamza/create-notes-file)
-    "* #+TITLE: %? \n #+AUTHOR: \n  #+CREATED: <%<%Y-%m-%d %a>>\n   DEADLINE: <%<%Y-%m-%d %a>>\n "
-    :empty-lines 1)))
+  ))
 
 (setq org-todo-keywords        ; This overwrites the default Doom org-todo-keywords
         '((sequence
            "TODO(t)"           ; A task that is ready to be tackled
-           "BLOG(b)"           ; Blog writing assignments
-           "PROJ(p)"           ; A project that contains other tasks
            "WAIT(w)"           ; Something is holding up this task
-           "PROG(r)"
+           "NEXT(n)"           ; The next task to do in a project
+           "INPROGRESS(p)"     ; A task is in progress
            "|"                 ; The pipe necessary to separate "active" states and "inactive" states
            "DONE(d)"           ; Task has been completed
            "INACTIVE(i)"       ; Projects that have yet to be started
            "CANCELLED(c)" )))  ; Task has been cancelled
 
+;; set closed time on done tasks
+(setq org-log-done 'time)
 
 (setq org-agenda-files (directory-files-recursively "~/Documents/org/" "\\.org$"))
 (setq org-roam-directory "~/Documents/org/SlipBox")
 (setq org-roam-file-extensions '("org" "md"))
+(require 'md-roam)
 (md-roam-mode 1) ; md-roam-mode must be active before org-roam-db-sync
 (setq md-roam-file-extension "md") ; default "md". Specify an extension such as "markdown"
 (org-roam-db-autosync-mode 1) ; autosync-mode triggers db-sync. md-roam-mode must be already active
@@ -97,11 +123,7 @@
 )
 
 
-;; doom emacs fonts
-(setq doom-font (font-spec :family "Source Code Pro" :size 15)
-      doom-variable-pitch-font (font-spec :family "EtBembo" :size 18)
-      doom-big-font (font-spec :family "Source Code Pro" :size 24)
-      )
+;; doom-themes
 (after! doom-themes
   (setq doom-themes-enable-bold t
         doom-themes-enable-italic t))
@@ -171,3 +193,22 @@ With a prefix argument, insert only the non-directory part."
 (setq notdeft-directories '("~/Documents/org/SlipBox/"))
 (setq notdeft-extension "md")
 (setq notdeft-secondary-extensions '("md" "org" "txt"))
+
+
+;; beancount
+(add-to-list 'load-path "~/beancount-mode")
+(require 'beancount)
+(add-to-list 'auto-mode-alist '("\\.beancount\\'" . beancount-mode))
+(add-hook 'beancount-mode-hook #'outline-minor-mode)
+(define-key beancount-mode-map (kbd "C-c C-n") #'outline-next-visible-heading)
+(define-key beancount-mode-map (kbd "C-c C-p") #'outline-previous-visible-heading)
+
+
+;; lsp-pyright
+(use-package lsp-pyright
+  :ensure t
+  :hook (python-mode . (lambda ()
+                          (require 'lsp-pyright)
+                          (lsp))))  ; or lsp-deferred
+
+
