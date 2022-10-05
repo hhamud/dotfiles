@@ -27,12 +27,12 @@
 
 
 ;; dashboard configuation
-;;(use-package dashboard
+(use-package dashboard
   ;;:ensure t
-  ;;:config
-  ;;(dashboard-setup-startup-hook))
+  :config
+  (dashboard-setup-startup-hook))
 
-;;(setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+(setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
 
 ;; Set the title
 (setq dashboard-banner-logo-title "Welcome to Emacs Dashboard")
@@ -57,6 +57,7 @@
 ;; icons for the dashboard
 (setq dashboard-set-heading-icons t)
 (setq dashboard-set-file-icons t)
+
 
 (after! org
 (setq org-agenda-custom-commands
