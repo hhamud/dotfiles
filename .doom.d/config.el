@@ -58,23 +58,33 @@
 (setq dashboard-set-heading-icons t)
 (setq dashboard-set-file-icons t)
 
-
+;; find the correct monthly file review
 (after! org
-(setq org-agenda-custom-commands
-      '(("g" "Get Things Done (GTD)"
-         ((todo "NEXT|INPROGRESS"
-                ((org-agenda-skip-function
-                  '(org-agenda-skip-entry-if 'deadline))
-                 (org-agenda-prefix-format "  %i %-12:c [%e] ")
-                 (org-agenda-overriding-header "\nTasks\n")))
-          (agenda ""
-                  ((org-agenda-entry-types '(:deadline))
-                   (org-deadline-warning-days 7)
-                   (org-agenda-skip-function
-                    '(org-agenda-skip-entry-if 'notregexp "\\* TODO"))
-                   (org-agenda-overriding-header "\nDeadlines\n")))
-          (tags "CLOSED>=\"<today>\""
-                ((org-agenda-overriding-header "\nCompleted Today\n")))))))
+  (setq org-agenda-custom-commands
+        '(("g" "Get Things Done (GTD)"
+           ((todo "NEXT|INPROGRESS"
+                  ((org-agenda-skip-function
+                    '(org-agenda-skip-entry-if 'deadline))
+                   (org-agenda-prefix-format "  %i %-12:c [%e] ")
+                   (org-agenda-overriding-header "\nTasks\n")))
+
+            (agenda ""
+                    ((org-agenda-entry-types '(:deadline))
+                     (org-deadline-warning-days 7)
+                     (org-agenda-skip-function
+                      '(org-agenda-skip-entry-if 'notregexp "\\* TODO"))
+                     (org-agenda-overriding-header "\nDeadlines\n")))
+
+            (tags-todo "+monthly"
+                       ((org-agenda-prefix-format "  %i %-12:c [%e] ")
+                        (org-agenda-overriding-header "\nMonthly Tasks\n")))
+
+            (tags-todo "+yearly"
+                       ((org-agenda-prefix-format "  %i %-12:c [%e] ")
+                        (org-agenda-overriding-header "\nAnnual Goals\n")))
+
+            (tags "CLOSED>=\"<today>\""
+                  ((org-agenda-overriding-header "\nCompleted Today\n")))))))
 
 
 (setq org-archive-location "~/Documents/org/projects/archive/%s_archive::")
