@@ -87,6 +87,14 @@
                   ((org-agenda-overriding-header "\nCompleted Today\n")))))))
 
 
+
+(setq org-refile-targets (quote ((nil :maxlevel . 10)
+                             (org-agenda-files :maxlevel . 10))))
+
+(setq org-refile-use-outline-path t)
+(setq org-outline-path-complete-in-steps nil)
+(setq org-refile-allow-creating-parent-nodes (quote confirm))
+
 (setq org-archive-location "~/Documents/org/projects/archive/%s_archive::")
 
 (setq org-capture-templates '(
