@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 
 function install_emacs(){
+    echo "======> Installing emacs <======";	
     sudo pacman -Syu emacs ripgrep;
     git clone --depth 1 https://github.com/hlissner/doom-emacs ~/.emacs.d;
     rm -rf /home/$USER/.emacs.d/;
@@ -23,15 +24,24 @@ function check_init(){
 }
 
 function install_dotfiles(){
-    DIR="/home/$USER/.dotfiles"
+    DIR="$HOME/.dotfiles"
     if [ -d  "$DIR" ]; then
         echo "dotfiles already exist"
     else
-        echo "syncing dotfiles"
+    	echo "======> installing dotfiles <======";
         cd ~/.dotfiles;
-        for file in *; do
-            ln -sf ~/.dotfiles/"$file" ~/."$file"
-        done
+	# bash files
+	rm -rf $HOME/.bashrc $HOME/.bash_profile
+	ln -s $HOME/.dotfiles/.bashrc $HOME/.bashrc
+	ln -s $HOME/.dotfiles/.bash_profile  $HOME/.bash_profile
+
+	# Emacs config files
+	rm -rf $HOME/.doom.d
+	ln -s $HOME/.doom.d  $HOME/.doom.d
+
+	#vim config files
+	rm -rf $HOME/.config
+	ln -s $HOME/.config  $HOME/.config
     fi
 }
 
