@@ -5,8 +5,8 @@
 ## Installation
 
 ``` sh
-git clone https://github.com/hhamud/dotfiles.git ~/.dotfiles
+git clone https://github.com/hhamud/dotfiles.git $HOME/.dotfiles
 cd ~/dotfiles/install-scripts
-bash setup.sh run_script
+bash setup.sh 
 ```
 

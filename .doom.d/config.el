@@ -84,8 +84,16 @@
                         (org-agenda-overriding-header "\nAnnual Goals\n")))
 
             (tags "CLOSED>=\"<today>\""
-                  ((org-agenda-overriding-header "\nCompleted Today\n")))))))
+                  ((org-agenda-overriding-header "\nCompleted Today\n")))))
 
+          ("R" "Monthly Review"
+           ((tags "CLOSED>=\"<-1m>\""
+                  ((org-agenda-overriding-header "\nCompleted This Month\n")
+                   (org-agenda-prefix-format " %-12:c%?-12t% s")
+                   ))))))
+
+(setq org-columns-default-format
+      "%25ITEM %TODO %3PRIORITY %CLOSED")
 
 
 (setq org-refile-targets (quote ((nil :maxlevel . 10)
