@@ -27,12 +27,12 @@
 
 
 ;; dashboard configuation
-(use-package dashboard
+;;(use-package dashboard
   ;;:ensure t
-  :config
-  (dashboard-setup-startup-hook))
+ ; :config
+ ; (dashboard-setup-startup-hook))
 
-(setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+;;(setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
 
 ;; Set the title
 (setq dashboard-banner-logo-title "Welcome to Emacs Dashboard")
@@ -62,11 +62,13 @@
 (after! org
   (setq org-agenda-custom-commands
         '(("g" "Get Things Done (GTD)"
-           ((todo "NEXT|INPROGRESS"
-                  ((org-agenda-skip-function
-                    '(org-agenda-skip-entry-if 'deadline))
-                   (org-agenda-prefix-format "  %i %-12:c [%e] ")
+           ((tags "-projects/+NEXT|+INPROGRESS"
+                  ((org-agenda-prefix-format "  %i %-12:c [%e] ")
                    (org-agenda-overriding-header "\nTasks\n")))
+
+            (tags "projects/NEXT"
+                   ((org-agenda-prefix-format "  %i %-12:c [%e] ")
+                        (org-agenda-overriding-header "\n Projects Tasks\n")))
 
             (agenda ""
                     ((org-agenda-entry-types '(:deadline))
