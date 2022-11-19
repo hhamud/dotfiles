@@ -234,3 +234,14 @@ With a prefix argument, insert only the non-directory part."
                           (lsp))))  ; or lsp-deferred
 
 
+;; clojure remaps
+(map!
+ :map paredit-mode-map
+ :leader (:prefix ("l" . "Lisps")
+         :nvie "f" #'paredit-forward-slurp-sexp
+         :nvie "b" #'paredit-forward-barf-sexp
+         :nie "k" #'paredit-kill-region
+         :nie "s" #'paredit-splice-sexp
+         :nie "(" #'paredit-wrap-round
+         :nie "[" #'paredit-wrap-square
+         :nie "{" #'paredit-wrap-curly))

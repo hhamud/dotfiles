@@ -158,3 +158,6 @@ alias kb="cd Documents/tiddlywiki_folders && tiddlywiki kbase/ --listen"
 alias ide="bash ~/.dotfiles/ide.sh"
 export PATH="$HOME/.fuelup/bin:$PATH"
 export PATH="$PATH:/home/user/.foundry/bin"
+
+# load direnv
+eval "$(direnv hook bash)"
