@@ -226,14 +226,6 @@ With a prefix argument, insert only the non-directory part."
 (define-key beancount-mode-map (kbd "C-c C-p") #'outline-previous-visible-heading)
 
 
-;; lsp-pyright
-(use-package lsp-pyright
-  :ensure t
-  :hook (python-mode . (lambda ()
-                          (require 'lsp-pyright)
-                          (lsp))))  ; or lsp-deferred
-
-
 ;; clojure remaps
 (map!
  :map paredit-mode-map
