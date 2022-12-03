@@ -135,8 +135,16 @@
 (md-roam-mode 1) ; md-roam-mode must be active before org-roam-db-sync
 (setq md-roam-file-extension "md") ; default "md". Specify an extension such as "markdown"
 (org-roam-db-autosync-mode 1) ; autosync-mode triggers db-sync. md-roam-mode must be already active
+;;(add-hook 'md-roam-mode-hook 'org-roam-buffer-toggle) ;; add org-roam-toggle to markdown mode hook
 
+(defun org-roam-backlink ()
+     "display the backlinks of the current org-roam buffer"
+     (interactive)
+     (progn
+        (display-buffer (get-buffer-create org-roam-buffer))
+        (org-roam-buffer-persistent-redisplay)))
 
+(add-hook 'md-roam-mode-hook 'org-roam-backlink)
 ;;source code block syntax highlighting
 (setq org-src-fontify-natively t
     org-src-tab-acts-natively t
@@ -237,3 +245,6 @@ With a prefix argument, insert only the non-directory part."
          :nie "(" #'paredit-wrap-round
          :nie "[" #'paredit-wrap-square
          :nie "{" #'paredit-wrap-curly))
+
+;; increase font size
+(set-face-attribute 'default nil :height 240)

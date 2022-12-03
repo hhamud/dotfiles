@@ -1,4 +1,6 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
+
+
 
 function install_emacs(){
     echo "======> Installing emacs <======"	
@@ -9,6 +11,7 @@ function install_emacs(){
     export PATH=$PATH:$HOME/.emacs.d/doom/bin
     doom doctor
 }
+
 
 function check_init(){
     package=emacs

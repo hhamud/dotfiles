@@ -159,5 +159,9 @@ alias ide="bash ~/.dotfiles/ide.sh"
 export PATH="$HOME/.fuelup/bin:$PATH"
 export PATH="$PATH:/home/user/.foundry/bin"
 
+alias solc="$HOME/.local/bin/solc"
+
+
+
 # load direnv
 eval "$(direnv hook bash)"
