@@ -34,6 +34,8 @@
 
 ;;(setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
 
+;; doom themes
+(setq doom-theme 'doom-spacegrey)
 ;; Set the title
 (setq dashboard-banner-logo-title "Welcome to Emacs Dashboard")
 ;; Set the banner
@@ -57,6 +59,7 @@
 ;; icons for the dashboard
 (setq dashboard-set-heading-icons t)
 (setq dashboard-set-file-icons t)
+
 
 ;; find the correct monthly file review
 (after! org
@@ -92,11 +95,15 @@
            ((tags "CLOSED>=\"<-1m>\""
                   ((org-agenda-overriding-header "\nCompleted This Month\n")
                    (org-agenda-prefix-format " %-12:c%?-12t% s")
-                   ))))))
+                   ))))
+          ))
 
 (setq org-columns-default-format
       "%25ITEM %TODO %3PRIORITY %CLOSED")
 
+(setq
+    org-superstar-headline-bullets-list '("⁖" "◉" "○" "✸" "✿")
+)
 
 (setq org-refile-targets (quote ((nil :maxlevel . 10)
                              (org-agenda-files :maxlevel . 10))))
@@ -131,10 +138,7 @@
 (setq org-agenda-archives-mode t)
 (setq org-roam-directory "~/Documents/org/SlipBox")
 (setq org-roam-file-extensions '("org" "md"))
-(require 'md-roam)
-(md-roam-mode 1) ; md-roam-mode must be active before org-roam-db-sync
-(setq md-roam-file-extension "md") ; default "md". Specify an extension such as "markdown"
-(org-roam-db-autosync-mode 1) ; autosync-mode triggers db-sync. md-roam-mode must be already active
+
 
 (defun org-roam-backlink ()
      "display the backlinks of the current org-roam buffer"
@@ -185,13 +189,17 @@
 
 (use-package! md-roam ; load immediately, before org-roam
   :config
-  (setq md-roam-file-extension-single "md"))
+  (setq md-roam-file-extension-single "md")
+  (setq org-roam-file-extensions '("org" "md"))
+  (setq md-roam-file-extension "md") ; default "md". Specify an extension such as "markdown"
+  (md-roam-mode 1)) ; md-roam-mode must be active before org-roam-db-sync
 
+(org-roam-db-autosync-mode 1) ; autosync-mode triggers db-sync. md-roam-mode must be already active
 
 (defun markdown-string-block()
   "Creates yaml template for md-roam"
   (interactive)
-  (insert (format "--- \ntitle: \nid: %s \n---" (shell-command-to-string "uuidgen"))))
+  (insert (format "---\ntitle: \nid: %s\n---" (shell-command-to-string "uuidgen"))))
 
 
 (defun insert-file-name (file &optional relativep)
@@ -233,7 +241,7 @@
 (define-key beancount-mode-map (kbd "C-c C-p") #'outline-previous-visible-heading)
 
 
-;; clojure remaps
+;; pareedit remaps
 (map!
  :map paredit-mode-map
  :leader (:prefix ("l" . "Lisps")
@@ -245,17 +253,59 @@
          :nie "[" #'paredit-wrap-square
          :nie "{" #'paredit-wrap-curly))
 
-;; custom functions
-  (defun elisp-buffer ()
-    "generate a new elisp buffer"
-    (interactive)
-    (switch-to-buffer (generate-new-buffer "*elisp-buffer*"))
-    (emacs-lisp-mode))
-
-(global-set-key (kbd "C-c v") 'elisp-buffer)
-
 ;; increase font size depending on screen size
 (if (>= (x-display-pixel-width) 3840)
-    (set-face-attribute 'default nil :height 240)
+    (set-face-attribute 'default nil :height 180)
     (set-face-attribute 'default nil :height 120))
 
+;; markdown-dnd-images -> allows dragging and dropping of images into markdown
+(require 'markdown-dnd-images)
+(setq dnd-save-directory "~/Documents/org/emacs_images")
+(setq dnd-save-buffer-name nil)
+(setq dnd-view-inline t)
+
+;; chatgpt
+(load! "chatgpt.el" "~/Documents/projects/chatgpt-mode")
+(require 'chatgpt)
+
+;;(global-set-key (kbd "C-c C-c b") 'chatgpt-run)
+;;(global-set-key (kbd "C-c C-c c") 'chatgpt-input-auth-token)
+
+(defvar my-keys-minor-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-x C-c b") 'chatgpt-run)
+    (define-key map (kbd "C-x C-c c") 'chatgpt-input-auth-token)
+    map)
+  "my-keys-minor-mode keymap.")
+
+(define-minor-mode my-keys-minor-mode
+  "A minor mode so that my key settings override annoying major modes."
+  :init-value t
+  :lighter " my-keys")
+
+(my-keys-minor-mode 1)
+
+(setq org-table-eval-formulas t)
+(global-set-key (kbd "C-c i") 'org-edit-src-code)
+
+
+(defun copy-todo-to-file (todo-text)
+  "Copy a completed todo to a file of your choosing."
+  (interactive "sTodo text: ")
+  (let* ((dir "~/Documents/org/review")
+         (file (expand-file-name (read-file-name "Copy todo to file: " dir dir))))
+    (find-file file)  ;; Open the file
+    (goto-char (point-min))  ;; Go to the beginning of the file
+    (if (re-search-forward "What did I accomplish" nil t)
+        ;; If the "What did I accomplish" heading is found
+        (progn
+          (forward-line)  ;; Go to the next line
+          (insert (format "CLOSED: [%s] %s\n" (format-time-string "%Y-%m-%d %H:%M") todo-text)))  ;; Insert the closed date and todo text
+      (error "Heading not found"))
+    (save-buffer)  ;; Save the file
+    (kill-buffer)))  ;; Close the file
+
+(add-hook 'org-after-todo-state-change-hook
+          (lambda ()
+            (when (string= org-state "DONE")
+              (copy-todo-to-file (org-get-heading t t)))))

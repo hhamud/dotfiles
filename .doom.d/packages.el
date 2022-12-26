@@ -56,3 +56,6 @@
 
 (package! sway-mode
   :recipe (:host github :repo "hhamud/sway-mode" :files ("sway-mode.el")))
+
+(package! markdown-dnd-images
+  :recipe (:host github :repo "mooreryan/markdown-dnd-images" :files ("markdown-dnd-images.el")))
