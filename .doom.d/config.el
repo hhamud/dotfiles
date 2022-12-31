@@ -147,7 +147,7 @@
         (display-buffer (get-buffer-create org-roam-buffer))
         (org-roam-buffer-persistent-redisplay)))
 
-(add-hook 'md-roam-mode-hook 'org-roam-backlink)
+;;(add-hook 'md-roam-mode-hook 'org-roam-backlink)
 
 ;;source code block syntax highlighting
 (setq org-src-fontify-natively t
@@ -222,25 +222,6 @@
 (define-key markdown-mode-map (kbd "C-c u") 'insert-clipboard-image-to-buffer)
 (define-key markdown-mode-map (kbd "C-c mm") 'markdown-string-block)
 
-
-;; notdeft
-(add-to-list 'load-path "~/notdeft")
-(add-to-list 'load-path "~/notdeft/extras")
-(load "notdeft-example")
-(setq notdeft-directories '("~/Documents/org/SlipBox/"))
-(setq notdeft-extension "md")
-(setq notdeft-secondary-extensions '("md" "org" "txt"))
-
-
-;; beancount
-(add-to-list 'load-path "~/beancount-mode")
-(require 'beancount)
-(add-to-list 'auto-mode-alist '("\\.beancount\\'" . beancount-mode))
-(add-hook 'beancount-mode-hook #'outline-minor-mode)
-(define-key beancount-mode-map (kbd "C-c C-n") #'outline-next-visible-heading)
-(define-key beancount-mode-map (kbd "C-c C-p") #'outline-previous-visible-heading)
-
-
 ;; pareedit remaps
 (map!
  :map paredit-mode-map
@@ -264,12 +245,6 @@
 (setq dnd-save-buffer-name nil)
 (setq dnd-view-inline t)
 
-;; chatgpt
-(load! "chatgpt.el" "~/Documents/projects/chatgpt-mode")
-(require 'chatgpt)
-
-;;(global-set-key (kbd "C-c C-c b") 'chatgpt-run)
-;;(global-set-key (kbd "C-c C-c c") 'chatgpt-input-auth-token)
 
 (defvar my-keys-minor-mode-map
   (let ((map (make-sparse-keymap)))
@@ -292,7 +267,7 @@
 (defun copy-todo-to-file (todo-text)
   "Copy a completed todo to a file of your choosing."
   (interactive "sTodo text: ")
-  (let* ((dir "~/Documents/org/review")
+  (let* ((dir "~/Documents/org/review/2022/")
          (file (expand-file-name (read-file-name "Copy todo to file: " dir dir))))
     (find-file file)  ;; Open the file
     (goto-char (point-min))  ;; Go to the beginning of the file
@@ -309,3 +284,5 @@
           (lambda ()
             (when (string= org-state "DONE")
               (copy-todo-to-file (org-get-heading t t)))))
+
+
