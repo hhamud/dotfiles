@@ -102,8 +102,7 @@
       "%25ITEM %TODO %3PRIORITY %CLOSED")
 
 (setq
-    org-superstar-headline-bullets-list '("⁖" "◉" "○" "✸" "✿")
-)
+    org-superstar-headline-bullets-list '("⁖" "◉" "○" "✸" "✿"))
 
 (setq org-refile-targets (quote ((nil :maxlevel . 10)
                              (org-agenda-files :maxlevel . 10))))
@@ -274,15 +273,39 @@
     (if (re-search-forward "What did I accomplish" nil t)
         ;; If the "What did I accomplish" heading is found
         (progn
-          (forward-line)  ;; Go to the next line
-          (insert (format "CLOSED: [%s] %s\n" (format-time-string "%Y-%m-%d %H:%M") todo-text)))  ;; Insert the closed date and todo text
+          (forward-line)  ;; Go to the next line (insert (format "CLOSED: [%s] %s\n" (format-time-string "%Y-%m-%d %H:%M") todo-text)))  ;; Insert the closed date and todo text
       (error "Heading not found"))
     (save-buffer)  ;; Save the file
-    (kill-buffer)))  ;; Close the file
+    (kill-buffer))))  ;; Close the file
 
 (add-hook 'org-after-todo-state-change-hook
           (lambda ()
             (when (string= org-state "DONE")
               (copy-todo-to-file (org-get-heading t t)))))
 
+;; set default frame size upon open for emacs
+(add-to-list 'default-frame-alist '(height . 100))
+(add-to-list 'default-frame-alist '(width . 100))
 
+;;;; frame keybindings
+(defun search-new-frame (workspace)
+  "Creates a new frame after searching for a file."
+  (interactive "Fselect file:")
+  (let ((new_buffer (find-file-noselect workspace)))
+  (make-frame)
+  (set-frame-height (selected-frame) 100)
+  (set-frame-width (selected-frame) 100)
+  (set-window-buffer (selected-window) new_buffer)))
+
+(defun new-terminal ()
+  "Create a new frame with a vterm buffer."
+  (interactive)
+  (let ((vterm-buffer (vterm)))
+    (make-frame `((name . "vterm")
+                  (buffer . ,vterm-buffer)))
+  (set-frame-height (selected-frame) 100)
+  (set-frame-width (selected-frame) 100)))
+
+(global-set-key (kbd "C-c f") 'search-new-frame)
+(global-set-key (kbd "C-c d") 'delete-frame)
+(global-set-key (kbd "C-c t") 'new-terminal)
