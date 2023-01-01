@@ -306,6 +306,20 @@
   (set-frame-height (selected-frame) 100)
   (set-frame-width (selected-frame) 100)))
 
+
 (global-set-key (kbd "C-c f") 'search-new-frame)
 (global-set-key (kbd "C-c d") 'delete-frame)
 (global-set-key (kbd "C-c t") 'new-terminal)
+
+;; display cider error in dedicated frame
+(defun cider-jackin ()
+  "Create a new CIDER REPL frame."
+  (interactive)
+  (make-frame `((name . "cider")
+               (buffer . ,(cider-switch-to-repl-buffer)))))
+
+
+
+(after! cider
+  ;; display error in repl buffer only
+  (setq cider-show-error-buffer 'only-in-repl))
