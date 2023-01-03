@@ -266,17 +266,18 @@
 (defun copy-todo-to-file (todo-text)
   "Copy a completed todo to a file of your choosing."
   (interactive "sTodo text: ")
-  (let* ((dir "~/Documents/org/review/2022/")
+  (let* ((dir "~/Documents/org/review/2023/")
          (file (expand-file-name (read-file-name "Copy todo to file: " dir dir))))
     (find-file file)  ;; Open the file
     (goto-char (point-min))  ;; Go to the beginning of the file
     (if (re-search-forward "What did I accomplish" nil t)
         ;; If the "What did I accomplish" heading is found
         (progn
-          (forward-line)  ;; Go to the next line (insert (format "CLOSED: [%s] %s\n" (format-time-string "%Y-%m-%d %H:%M") todo-text)))  ;; Insert the closed date and todo text
+          (forward-line)  ;; Go to the next line
+          (insert (format "CLOSED: [%s] %s\n" (format-time-string "%Y-%m-%d %H:%M") todo-text)))  ;; Insert the closed date and todo text
       (error "Heading not found"))
     (save-buffer)  ;; Save the file
-    (kill-buffer))))  ;; Close the file
+    (kill-buffer)))  ;; Close the file
 
 (add-hook 'org-after-todo-state-change-hook
           (lambda ()
@@ -293,33 +294,46 @@
   (interactive "Fselect file:")
   (let ((new_buffer (find-file-noselect workspace)))
   (make-frame)
-  (set-frame-height (selected-frame) 100)
-  (set-frame-width (selected-frame) 100)
   (set-window-buffer (selected-window) new_buffer)))
+
+
+(defun search-project ()
+  "Creates a new frame from the projects directory."
+  (interactive)
+  (let ((file (read-file-name "Select file: " "~/Documents/projects/")))
+    (find-file-other-frame file)
+    ))
 
 (defun new-terminal ()
   "Create a new frame with a vterm buffer."
   (interactive)
-  (let ((vterm-buffer (vterm)))
+  (let ((vterm-buffer
     (make-frame `((name . "vterm")
-                  (buffer . ,vterm-buffer)))
-  (set-frame-height (selected-frame) 100)
-  (set-frame-width (selected-frame) 100)))
-
+                  (buffer . ,(vterm))))))
+    ))
 
 (global-set-key (kbd "C-c f") 'search-new-frame)
 (global-set-key (kbd "C-c d") 'delete-frame)
 (global-set-key (kbd "C-c t") 'new-terminal)
+(global-set-key (kbd "C-c n") 'search-project)
 
 ;; display cider error in dedicated frame
 (defun cider-jackin ()
   "Create a new CIDER REPL frame."
   (interactive)
-  (make-frame `((name . "cider")
-               (buffer . ,(cider-switch-to-repl-buffer)))))
-
-
+  (let ((cider-buffer
+         (make-frame `((name . "cider")
+                       (buffer . ,(cider))))))
+    (cider-switch-to-repl-buffer)
+    (delete-other-windows)
+    (set-window-buffer (selected-window) cider-buffer)))
 
 (after! cider
   ;; display error in repl buffer only
   (setq cider-show-error-buffer 'only-in-repl))
+
+
+(defun org-review-calender-template ()
+"Creates a monthly review org template."
+(interactive)
+(insert (format "#+title: \n\n\n* What are my goals?:\n\n\n* What did I accomplish?:\n\n\n* What did I fail to accomplish?:\n\n\n* Why did I fail?:")))
