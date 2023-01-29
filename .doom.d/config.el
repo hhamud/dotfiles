@@ -80,6 +80,14 @@
                       '(org-agenda-skip-entry-if 'notregexp "\\* TODO"))
                      (org-agenda-overriding-header "\nDeadlines\n")))
 
+            (tags-todo "+daily"
+                       ((org-agenda-prefix-format "  %i %-12:c [%e] ")
+                        (org-agenda-overriding-header "\nDaily Goals\n")))
+
+            (tags-todo "+weekly"
+                       ((org-agenda-prefix-format "  %i %-12:c [%e] ")
+                        (org-agenda-overriding-header "\nWeekly Goals\n")))
+
             (tags-todo "+monthly"
                        ((org-agenda-prefix-format "  %i %-12:c [%e] ")
                         (org-agenda-overriding-header "\nMonthly Tasks\n")))
@@ -170,8 +178,9 @@
   (setq mixed-pitch-set-heigth t)
   ;;(set-face-attribute 'variable-pitch nil :height 1.3)
   )
-(use-package! websocket
-    :after org-roam)
+
+;;(use-package! websocket
+    ;;:after org-roam)
 
 (use-package! org-roam-ui
     :after org-roam ;; or :after org
@@ -245,20 +254,6 @@
 (setq dnd-view-inline t)
 
 
-(defvar my-keys-minor-mode-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "C-x C-c b") 'chatgpt-run)
-    (define-key map (kbd "C-x C-c c") 'chatgpt-input-auth-token)
-    map)
-  "my-keys-minor-mode keymap.")
-
-(define-minor-mode my-keys-minor-mode
-  "A minor mode so that my key settings override annoying major modes."
-  :init-value t
-  :lighter " my-keys")
-
-(my-keys-minor-mode 1)
-
 (setq org-table-eval-formulas t)
 (global-set-key (kbd "C-c i") 'org-edit-src-code)
 
@@ -317,7 +312,6 @@
 (global-set-key (kbd "C-c t") 'new-terminal)
 (global-set-key (kbd "C-c n") 'search-project)
 
-;; display cider error in dedicated frame
 (defun cider-jackin ()
   "Create a new CIDER REPL frame."
   (interactive)
@@ -328,12 +322,12 @@
     (delete-other-windows)
     (set-window-buffer (selected-window) cider-buffer)))
 
-(after! cider
-  ;; display error in repl buffer only
-  (setq cider-show-error-buffer 'only-in-repl))
-
-
 (defun org-review-calender-template ()
 "Creates a monthly review org template."
 (interactive)
 (insert (format "#+title: \n\n\n* What are my goals?:\n\n\n* What did I accomplish?:\n\n\n* What did I fail to accomplish?:\n\n\n* Why did I fail?:")))
+
+;; Python Dap mode
+(after! dap-mode
+  (setq dap-python-debugger 'debugpy))
+

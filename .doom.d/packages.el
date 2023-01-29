@@ -59,3 +59,6 @@
 
 (package! markdown-dnd-images
   :recipe (:host github :repo "mooreryan/markdown-dnd-images" :files ("markdown-dnd-images.el")))
+
+(package! websocket
+  :recipe (:host github :repo "ahyatt/emacs-websocket" :files ("websocket.el")))
