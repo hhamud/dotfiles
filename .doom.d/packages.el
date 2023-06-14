@@ -62,3 +62,6 @@
 
 (package! websocket
   :recipe (:host github :repo "ahyatt/emacs-websocket" :files ("websocket.el")))
+
+(package! noir-mode
+  :recipe (:host github :repo "hhamud/noir-mode" :files ("noir-mode.el")))
