@@ -331,10 +331,6 @@
 (after! dap-mode
   (setq dap-python-debugger 'debugpy))
 
-(use-package exec-path-from-shell
-  :ensure
-  :init (exec-path-from-shell-initialize))
-
 (use-package dap-mode
   :ensure
   :config
