@@ -361,3 +361,19 @@
 (add-hook 'post-self-insert-hook 'my-auto-insert-dollar)
 
 (require 'noir-mode)
+
+
+(defun todo-creator (goal)
+  "Creates a todo list"
+  (interactive "sWhat is the goal: ")
+  (let*  ((terms '("daily" "weekly"))
+          (terra (completing-read "Choose a time period: " terms nil t))
+          (todo (format "** TODO %s :%s:" goal terra)))
+       (insert todo)))
+
+
+(use-package! tree-sitter
+  :config
+  (require 'tree-sitter-langs)
+  (global-tree-sitter-mode)
+  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
