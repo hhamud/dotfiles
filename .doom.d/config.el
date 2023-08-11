@@ -106,7 +106,7 @@
                    ))))
           ))
 
-(setq org-columns-default-format
+(setq org-columns-default-formatc
       "%25ITEM %TODO %3PRIORITY %CLOSED")
 
 (setq
@@ -325,7 +325,7 @@
 (defun org-review-calender-template ()
 "Creates a monthly review org template."
 (interactive)
-(insert (format "#+title: \n\n\n* What are my goals?:\n\n\n* What did I accomplish?:\n\n\n* What did I fail to accomplish?:\n\n\n* Why did I fail?:")))
+(insert (format "* What are my goals?:\n\n\n* What did I accomplish?:\n\n\n* What did I fail to accomplish?:\n\n\n* Why did I fail?:")))
 
 ;; Python Dap mode
 (after! dap-mode
@@ -366,14 +366,26 @@
 (defun todo-creator (goal)
   "Creates a todo list"
   (interactive "sWhat is the goal: ")
-  (let*  ((terms '("daily" "weekly"))
+  (let*  ((terms '("daily" "weekly" "monthly"))
           (terra (completing-read "Choose a time period: " terms nil t))
           (todo (format "** TODO %s :%s:" goal terra)))
        (insert todo)))
 
 
-(use-package! tree-sitter
+
+(use-package treesit
+  :commands (treesit-install-language-grammar nf/treesit-install-all-languages)
+  :init
+  (setq treesit-language-source-alist
+   '((bash . ("https://github.com/tree-sitter/tree-sitter-bash"))
+     (noir "https://github.com/hhamud/tree-sitter-noir")
+     (zig . ("https://github.com/GrayJack/tree-sitter-zig"))))
   :config
-  (require 'tree-sitter-langs)
-  (global-tree-sitter-mode)
-  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+  (defun nf/treesit-install-all-languages ()
+    "Install all languages specified by `treesit-language-source-alist'."
+    (interactive)
+    (let ((languages (mapcar 'car treesit-language-source-alist)))
+      (dolist (lang languages)
+	      (treesit-install-language-grammar lang)
+	      (message "`%s' parser was installed." lang)
+	      (sit-for 0.75)))))
