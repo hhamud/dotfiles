@@ -274,6 +274,14 @@
     (save-buffer)  ;; Save the file
     (kill-buffer)))  ;; Close the file
 
+
+(defun copy-region-todo-to-file (start end)
+  "Copy the content of the selected region as a todo to a file of your choosing."
+  (interactive "r")
+  (let ((todo-text (buffer-substring-no-properties start end)))
+    (copy-todo-to-file todo-text)))
+
+
 (add-hook 'org-after-todo-state-change-hook
           (lambda ()
             (when (string= org-state "DONE")
@@ -389,3 +397,10 @@
 	      (treesit-install-language-grammar lang)
 	      (message "`%s' parser was installed." lang)
 	      (sit-for 0.75)))))
+
+
+(defun create-blog (title)
+  "Creates the yaml entry for the blog post."
+  (interactive "sTitle: ")
+  (insert (format "---\ntitle: %s\ndate: %s\ndraft: true\ntags: []\n---" title (format-time-string "%Y-%m-%d"))
+  ))
