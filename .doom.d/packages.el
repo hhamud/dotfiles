@@ -66,5 +66,3 @@
 (package! noir-mode
   :recipe (:host github :repo "hhamud/noir-mode" :files ("noir-mode.el")))
 
-(package! tree-sitter)
-(package! tree-sitter-langs)

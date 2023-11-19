@@ -91,8 +91,10 @@
      (tramp-connection-local-default-system-profile
       (path-separator . ":")
       (null-device . "/dev/null"))))
+ '(magit-todos-insert-after '(bottom) nil nil "Changed by setter of obsolete option `magit-todos-insert-at'")
  '(package-selected-packages
-   '(hy-mode w3m sqlite spinner ron-mode pdf-tools package-lint graphql-mode exec-path-from-shell async-await))
+   '(lua-mode hy-mode w3m sqlite spinner ron-mode pdf-tools package-lint graphql-mode exec-path-from-shell async-await))
+ '(safe-local-variable-values '((eval progn (pp-buffer) (indent-buffer))))
  '(warning-suppress-log-types '((emacs))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

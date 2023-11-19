@@ -335,28 +335,6 @@
 (interactive)
 (insert (format "* What are my goals?:\n\n\n* What did I accomplish?:\n\n\n* What did I fail to accomplish?:\n\n\n* Why did I fail?:")))
 
-;; Python Dap mode
-(after! dap-mode
-  (setq dap-python-debugger 'debugpy))
-
-(use-package dap-mode
-  :ensure
-  :config
-  (dap-ui-mode)
-  (dap-ui-controls-mode 1)
-
-  (require 'dap-lldb)
-  (require 'dap-gdb-lldb)
-  ;; installs .extension/vscode
-  (dap-gdb-lldb-setup)
-  (dap-register-debug-template
-   "Rust::LLDB Run Configuration"
-   (list :type "lldb"
-         :request "launch"
-         :name "LLDB::Run"
-	 :gdbpath "rust-lldb"
-         :target nil
-         :cwd nil)))
 
 
 (defun my-auto-insert-dollar ()
@@ -368,9 +346,6 @@
 
 (add-hook 'post-self-insert-hook 'my-auto-insert-dollar)
 
-(require 'noir-mode)
-
-
 (defun todo-creator (goal)
   "Creates a todo list"
   (interactive "sWhat is the goal: ")
@@ -378,8 +353,6 @@
           (terra (completing-read "Choose a time period: " terms nil t))
           (todo (format "** TODO %s :%s:" goal terra)))
        (insert todo)))
-
-
 
 (use-package treesit
   :commands (treesit-install-language-grammar nf/treesit-install-all-languages)
@@ -398,9 +371,12 @@
 	      (message "`%s' parser was installed." lang)
 	      (sit-for 0.75)))))
 
-
 (defun create-blog (title)
   "Creates the yaml entry for the blog post."
   (interactive "sTitle: ")
-  (insert (format "---\ntitle: %s\ndate: %s\ndraft: true\ntags: []\n---" title (format-time-string "%Y-%m-%d"))
-  ))
+  (insert (format "---\ntitle: %s\ndate: %s\ndraft: true\ntags: []\n---" title (format-time-string "%Y-%m-%d"))))
+
+(setq doom-user-dir "/Users/user/.dotfiles/.doom.d/")
+
+(setq lsp-rust-server 'rust-analyzer)
+
