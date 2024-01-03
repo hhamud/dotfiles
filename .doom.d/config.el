@@ -36,6 +36,8 @@
 
 ;; doom themes
 (setq doom-theme 'doom-spacegrey)
+; Set a custom font. Font choice can be important for performance.
+(setq doom-font (font-spec :family "JetBrains Mono" :size 15 :weight 'light))
 ;; Set the title
 (setq dashboard-banner-logo-title "Welcome to Emacs Dashboard")
 ;; Set the banner
@@ -53,8 +55,7 @@
 
 (setq dashboard-items '((recents  . 5)
                         (projects . 5)
-                        (agenda . 10)
-                        ))
+                        (agenda . 10)))
 
 ;; icons for the dashboard
 (setq dashboard-set-heading-icons t)
@@ -109,8 +110,8 @@
 (setq org-columns-default-formatc
       "%25ITEM %TODO %3PRIORITY %CLOSED")
 
-(setq
-    org-superstar-headline-bullets-list '("⁖" "◉" "○" "✸" "✿"))
+(setq org-superstar-headline-bullets-list '("■" "▲" "━" "●" "•"))
+(setq org-superstar-cycle-headline-bullets nil)
 
 (setq org-refile-targets (quote ((nil :maxlevel . 10)
                              (org-agenda-files :maxlevel . 10))))
@@ -143,16 +144,16 @@
 
 (setq org-agenda-files (directory-files-recursively "~/Documents/org/" "\\.org$"))
 (setq org-agenda-archives-mode t)
-(setq org-roam-directory "~/Documents/org/SlipBox")
-(setq org-roam-file-extensions '("org" "md"))
+;;(setq org-roam-directory "~/Documents/org/SlipBox")
+;;(setq org-roam-file-extensions '("org"))
 
 
-(defun org-roam-backlink ()
-     "display the backlinks of the current org-roam buffer"
-     (interactive)
-     (progn
-        (display-buffer (get-buffer-create org-roam-buffer))
-        (org-roam-buffer-persistent-redisplay)))
+;;(defun org-roam-backlink ()
+     ;;"display the backlinks of the current org-roam buffer"
+     ;;(interactive)
+     ;;(progn
+        ;;(display-buffer (get-buffer-create org-roam-buffer))
+        ;;(org-roam-buffer-persistent-redisplay)))
 
 ;;(add-hook 'md-roam-mode-hook 'org-roam-backlink)
 
@@ -172,37 +173,37 @@
   '(font-lock-comment-face :slant italic)
   '(font-lock-keyword-face :slant italic))
 
-(use-package! mixed-pitch
-  :hook (org-mode . variable-pitch-mode)
-  :config
-  (setq mixed-pitch-set-heigth t)
-  ;;(set-face-attribute 'variable-pitch nil :height 1.3)
-  )
+;;(use-package! mixed-pitch
+  ;;:hook (org-mode . variable-pitch-mode)
+  ;;:config
+  ;;(setq mixed-pitch-set-heigth t)
+  ;;;;(set-face-attribute 'variable-pitch nil :height 1.3)
+  ;;)
 
 ;;(use-package! websocket
     ;;:after org-roam)
 
-(use-package! org-roam-ui
-    :after org-roam ;; or :after org
-;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
-;;         a hookable mode anymore, you're advised to pick something yourself
-;;         if you don't care about startup time, use
-;;  :hook (after-init . org-roam-ui-mode)
-    :config
-    (setq org-roam-ui-sync-theme t
-          org-roam-ui-follow t
-          org-roam-ui-update-on-save t
-          org-roam-ui-open-on-start t))
-
-
-(use-package! md-roam ; load immediately, before org-roam
-  :config
-  (setq md-roam-file-extension-single "md")
-  (setq org-roam-file-extensions '("org" "md"))
-  (setq md-roam-file-extension "md") ; default "md". Specify an extension such as "markdown"
-  (md-roam-mode 1)) ; md-roam-mode must be active before org-roam-db-sync
-
-(org-roam-db-autosync-mode 1) ; autosync-mode triggers db-sync. md-roam-mode must be already active
+;;(use-package! org-roam-ui
+    ;;:after org-roam ;; or :after org
+;;;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
+;;;;         a hookable mode anymore, you're advised to pick something yourself
+;;;;         if you don't care about startup time, use
+;;;;  :hook (after-init . org-roam-ui-mode)
+    ;;:config
+    ;;(setq org-roam-ui-sync-theme t
+          ;;org-roam-ui-follow t
+          ;;org-roam-ui-update-on-save t
+          ;;org-roam-ui-open-on-start t))
+;;
+;;
+;;(use-package! md-roam ; load immediately, before org-roam
+  ;;:config
+  ;;(setq md-roam-file-extension-single "md")
+  ;;(setq org-roam-file-extensions '("org" "md"))
+  ;;(setq md-roam-file-extension "md") ; default "md". Specify an extension such as "markdown"
+  ;;(md-roam-mode 1)) ; md-roam-mode must be active before org-roam-db-sync
+;;
+;;(org-roam-db-autosync-mode 1) ; autosync-mode triggers db-sync. md-roam-mode must be already active
 
 (defun markdown-string-block()
   "Creates yaml template for md-roam"
@@ -227,8 +228,8 @@
   (insert (concat "![ "(file-relative-name title) "](" (call-interactively 'insert-file-name) ")")))
 
 
-(define-key markdown-mode-map (kbd "C-c u") 'insert-clipboard-image-to-buffer)
-(define-key markdown-mode-map (kbd "C-c mm") 'markdown-string-block)
+;;(define-key markdown-mode-map (kbd "C-c u") 'insert-clipboard-image-to-buffer)
+;;(define-key markdown-mode-map (kbd "C-c mm") 'markdown-string-block)
 
 ;; pareedit remaps
 (map!
@@ -288,8 +289,8 @@
               (copy-todo-to-file (org-get-heading t t)))))
 
 ;; set default frame size upon open for emacs
-(add-to-list 'default-frame-alist '(height . 100))
-(add-to-list 'default-frame-alist '(width . 100))
+(add-to-list 'default-frame-alist '(height . 80))
+(add-to-list 'default-frame-alist '(width .  90))
 
 ;;;; frame keybindings
 (defun search-new-frame (workspace)
@@ -336,7 +337,6 @@
 (insert (format "* What are my goals?:\n\n\n* What did I accomplish?:\n\n\n* What did I fail to accomplish?:\n\n\n* Why did I fail?:")))
 
 
-
 (defun my-auto-insert-dollar ()
   "Automatically insert a dollar sign after inserting a dollar sign."
   (when (and (eq major-mode 'markdown-mode)
@@ -379,4 +379,107 @@
 (setq doom-user-dir "/Users/user/.dotfiles/.doom.d/")
 
 (setq lsp-rust-server 'rust-analyzer)
+
+
+;;org code blocks in monospace font
+(use-package org
+  :config
+  (defun my-adjoin-to-list-or-symbol (element list-or-symbol)
+    (let ((list (if (not (listp list-or-symbol))
+                    (list list-or-symbol)
+                  list-or-symbol)))
+      (require 'cl-lib)
+      (cl-adjoin element list)))
+
+  (eval-after-load "org"
+    '(mapc
+      (lambda (face)
+        (set-face-attribute
+         face nil
+         :inherit
+         (my-adjoin-to-list-or-symbol
+          'fixed-pitch
+          (face-attribute face :inherit))))
+
+ (list 'org-code 'org-block 'org-table 'org-date
+       'org-link 'org-footnote)))
+  )
+
+
+(after! hl-todo
+  (setq hl-todo-keyword-faces
+        `(("TEST" . "#ff0000")
+          ("NEXT" . ,(face-foreground 'font-lock-type-face)))))
+
+ (setq +ligatures-extra-symbols
+        '(;; org
+          :name          "»"
+          :src_block     "»"
+          :src_block_end "«"
+          :quote         "“"
+          :quote_end     "”"
+          ;; Functional
+          :lambda        "λ"
+          :def           "ƒ"
+          :composition   "○"
+          :map           "→"
+          ;; Types
+          :null          "∅"
+          :true          "⊤"
+          :false         "⊥"
+          :int           "ℤ"
+          :float         "ℝ"
+          :str           "ℂ"
+          :bool          "𝔹"
+          :list          "ℓ"
+          ;; Flow
+          :not           "¬"
+          :in            "∈"
+          :not-in        "∉"
+          :and           "∧"
+          :or            "∨"
+          :for           "∀"
+          :some          "∃"
+          :return        "⟼"
+          :yield         "⟻"
+          ;; Other
+          :union         "∪"
+          :intersect     "∩"
+          :diff          "∖"
+          :tuple         "⨂"
+          :pipe          "║"
+          :dot           "•"))
+
+  ;; Use as much of JetBrains Mono v2.221 as possible.
+  ;; If a version >2.221 exists, see if new symbols are supported
+  ;; and update below.
+  (set-fontset-font t ?» (font-spec :family "JetBrains Mono"))
+  (set-fontset-font t ?» (font-spec :family "JetBrains Mono"))
+  (set-fontset-font t ?« (font-spec :family "JetBrains Mono"))
+  (set-fontset-font t ?“ (font-spec :family "JetBrains Mono"))
+  (set-fontset-font t ?” (font-spec :family "JetBrains Mono"))
+  (set-fontset-font t ?λ (font-spec :family "JetBrains Mono"))
+  (set-fontset-font t ?ƒ (font-spec :family "JetBrains Mono"))
+  (set-fontset-font t ?∅ (font-spec :family "Fira Code"))
+  (set-fontset-font t ?⊤ (font-spec :family "JetBrains Mono"))
+  (set-fontset-font t ?⊥ (font-spec :family "JetBrains Mono"))
+  (set-fontset-font t ?ℤ (font-spec :family "JetBrains Mono"))
+  (set-fontset-font t ?ℝ (font-spec :family "Fira Code"))
+  (set-fontset-font t ?𝔹 (font-spec :family "Fira Code"))
+  (set-fontset-font t ?ℂ (font-spec :family "Fira Code"))
+  (set-fontset-font t ?∈ (font-spec :family "JetBrains Mono"))
+  (set-fontset-font t ?∉ (font-spec :family "JetBrains Mono"))
+  (set-fontset-font t ?∧ (font-spec :family "JetBrains Mono"))
+  (set-fontset-font t ?∨ (font-spec :family "JetBrains Mono"))
+  (set-fontset-font t ?∀ (font-spec :family "JetBrains Mono"))
+  (set-fontset-font t ?∃ (font-spec :family "JetBrains Mono"))
+  (set-fontset-font t ?⟼ (font-spec :family "Fira Code"))
+  (set-fontset-font t ?⟻ (font-spec :family "Fira Code"))
+  (set-fontset-font t ?∪ (font-spec :family "JetBrains Mono"))
+  (set-fontset-font t ?∩ (font-spec :family "JetBrains Mono"))
+  (set-fontset-font t ?∖ (font-spec :family "Free Mono"))
+  (set-fontset-font t ?⨂ (font-spec :family "Free Mono"))
+  (set-fontset-font t ?• (font-spec :family "JetBrains Mono"))
+  (set-fontset-font t ?⅓ (font-spec :family "Fira Code"))
+  (set-fontset-font t ?⅔ (font-spec :family "Fira Code"))
 
