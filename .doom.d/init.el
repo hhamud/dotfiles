@@ -80,7 +80,7 @@
 
        :checkers
        syntax              ; tasing you for every semicolon you forget
-       (spell +aspell) ; tasing you for misspelling mispelling
+       ;;(spell +aspell) ; tasing you for misspelling mispelling
        ;;grammar           ; tasing grammar mistake every you make
 
        :tools
@@ -113,7 +113,7 @@
 
        :lang
        ;;agda              ; types of types of types of types...
-       beancount         ; mind the GAAP
+       ;;beancount         ; mind the GAAP
        ;;cc                ; C > C++ == 1
        (clojure +lsp +tree-sitter)           ; java with a lisp
        (common-lisp +lsp +tree-sitter)       ; if you've seen one lisp, you've seen them all

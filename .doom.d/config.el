@@ -84,14 +84,8 @@
 (setq org-superstar-headline-bullets-list '("■" "▲" "━" "●" "•"))
 (setq org-superstar-cycle-headline-bullets nil)
 
-(setq org-refile-targets (quote ((nil :maxlevel . 10)
-                             (org-agenda-files :maxlevel . 10))))
-
-(setq org-refile-use-outline-path t)
 (setq org-outline-path-complete-in-steps nil)
-(setq org-refile-allow-creating-parent-nodes (quote confirm))
 
-(setq org-archive-location "~/Documents/org/agenda/projects/archive/%s_archive::")
 
 (setq org-todo-keywords        ; This overwrites the default Doom org-todo-keywords
         '((sequence
@@ -107,9 +101,9 @@
 ;; set closed time on done tasks
 (setq org-log-done 'time)
 (setq org-agenda-files (directory-files-recursively "~/Documents/org/agenda" "\\.org$"))
+(setq org-archive-location "~/Documents/org/archive/projects/%s_archive::")
 (setq org-agenda-archives-mode t)
 (setq org-roam-directory "~/Documents/org/info")
-(setq org-roam-file-extensions '("org"))
 
 (defun org-roam-backlink ()
      "display the backlinks of the current org-roam buffer"
@@ -117,8 +111,6 @@
      (progn
         (display-buffer (get-buffer-create org-roam-buffer))
         (org-roam-buffer-persistent-redisplay)))
-
-(add-hook 'md-roam-mode-hook 'org-roam-backlink)
 
 ;;source code block syntax highlighting
 (setq org-src-fontify-natively t
@@ -151,10 +143,13 @@
 
 (org-roam-db-autosync-mode 1) ; autosync-mode triggers db-sync. md-roam-mode must be already active
 
-(defun markdown-string-block()
+(defun org-string-block()
   "Creates yaml template for md-roam"
   (interactive)
-  (insert (format "---\ntitle: \nid: %s\n---" (shell-command-to-string "uuidgen"))))
+  (insert
+   (format ":PROPERTIES:\n:ID: %s:END:\n#+title: %s\n"
+           (shell-command-to-string "uuidgen")
+           (file-name-base (buffer-file-name)))))
 
 (defun insert-file-name (file &optional relativep)
   "Read file name and insert it at point.
@@ -181,11 +176,6 @@
          :nie "(" #'paredit-wrap-round
          :nie "[" #'paredit-wrap-square
          :nie "{" #'paredit-wrap-curly))
-
-;; increase font size depending on screen size
-(if (>= (x-display-pixel-width) 3840)
-    (set-face-attribute 'default nil :height 180)
-    (set-face-attribute 'default nil :height 120))
 
 (setq org-table-eval-formulas t)
 (global-set-key (kbd "C-c i") 'org-edit-src-code)
@@ -237,16 +227,14 @@
   "Creates a new frame from the projects directory."
   (interactive)
   (let ((file (read-file-name "Select file: " "~/Documents/projects/")))
-    (find-file-other-frame file)
-    ))
+    (find-file-other-frame file)))
 
 (defun new-terminal ()
   "Create a new frame with a vterm buffer."
   (interactive)
   (let ((vterm-buffer
     (make-frame `((name . "vterm")
-                  (buffer . ,(vterm))))))
-    ))
+                  (buffer . ,(vterm))))))))
 
 (global-set-key (kbd "C-c f") 'search-new-frame)
 (global-set-key (kbd "C-c d") 'delete-frame)
@@ -286,23 +274,6 @@
           (todo (format "** TODO %s :%s:" goal terra)))
        (insert todo)))
 
-(use-package treesit
-  :commands (treesit-install-language-grammar nf/treesit-install-all-languages)
-  :init
-  (setq treesit-language-source-alist
-   '((bash . ("https://github.com/tree-sitter/tree-sitter-bash"))
-     (noir "https://github.com/hhamud/tree-sitter-noir")
-     (zig . ("https://github.com/GrayJack/tree-sitter-zig"))))
-  :config
-  (defun nf/treesit-install-all-languages ()
-    "Install all languages specified by `treesit-language-source-alist'."
-    (interactive)
-    (let ((languages (mapcar 'car treesit-language-source-alist)))
-      (dolist (lang languages)
-	      (treesit-install-language-grammar lang)
-	      (message "`%s' parser was installed." lang)
-	      (sit-for 0.75)))))
-
 (defun create-blog (title)
   "Creates the yaml entry for the blog post."
   (interactive "sTitle: ")
@@ -311,7 +282,6 @@
 (setq doom-user-dir "/Users/user/.dotfiles/.doom.d/")
 
 (setq lsp-rust-server 'rust-analyzer)
-
 
 ;;org code blocks in monospace font
 (use-package org
@@ -334,8 +304,7 @@
           (face-attribute face :inherit))))
 
  (list 'org-code 'org-block 'org-table 'org-date
-       'org-link 'org-footnote)))
-  )
+       'org-link 'org-footnote))))
 
 
 (after! hl-todo
