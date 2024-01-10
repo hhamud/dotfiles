@@ -51,18 +51,5 @@
 (unpin! org-roam)
 (package! org-roam-ui)
 
-(package! md-roam
-  :recipe (:host github :repo "nobiot/md-roam"))
-
-(package! sway-mode
-  :recipe (:host github :repo "hhamud/sway-mode" :files ("sway-mode.el")))
-
-(package! markdown-dnd-images
-  :recipe (:host github :repo "mooreryan/markdown-dnd-images" :files ("markdown-dnd-images.el")))
-
 (package! websocket
   :recipe (:host github :repo "ahyatt/emacs-websocket" :files ("websocket.el")))
-
-(package! noir-mode
-  :recipe (:host github :repo "hhamud/noir-mode" :files ("noir-mode.el")))
-

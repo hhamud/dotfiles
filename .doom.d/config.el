@@ -222,7 +222,6 @@
   (make-frame)
   (set-window-buffer (selected-window) new_buffer)))
 
-
 (defun search-project ()
   "Creates a new frame from the projects directory."
   (interactive)
@@ -254,7 +253,7 @@
 (defun org-review-calender-template ()
 "Creates a monthly review org template."
 (interactive)
-(insert (format "* What are my goals?:\n\n\n* What did I accomplish?:\n\n\n* What did I fail to accomplish?:\n\n\n* Why did I fail?:")))
+(insert (format "* What are my goals?:\n\n\n* What did I accomplish?:\n\n\n* What did I fail to accomplish and why?:\n\n")))
 
 
 (defun my-auto-insert-dollar ()
