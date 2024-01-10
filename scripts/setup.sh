@@ -69,28 +69,17 @@ function check_init(){
         install_dotfiles
 
     fi
-
 }
 
 function install_dotfiles(){
 	echo "======> installing dotfiles <======"
 	cd ~/.dotfiles
-	# bash files
-	echo "======> symlinking bash files"
-	rm -rf $HOME/.bashrc $HOME/.bash_profile
-	ln -s $HOME/.dotfiles/.bashrc $HOME/.bashrc
-	ln -s $HOME/.dotfiles/.bash_profile  $HOME/.bash_profile
 
 	# Emacs config files
 	echo "======> symlinking emacs files"
 	rm -rf $HOME/.doom.d
 	ln -s $HOME/.dotfiles/.doom.d  $HOME/.doom.d
 
-	#vim config files
-	echo "======> symlinking vim files"
-	rm -rf $HOME/.config
-	ln -s $HOME/.dotfiles/.config  $HOME/.config
-	
 	echo "======> setup complete <======"
 }
 
