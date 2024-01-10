@@ -5,7 +5,6 @@ This is the
 * Installation
 
 - Copy and paste the code to auto install the dotfiles
-
 #+begin_src sh
 git clone https://github.com/hhamud/dotfiles.git $HOME/.dotfiles
 cd $HOME/.dotfiles/scripts
