@@ -301,6 +301,17 @@ Pare edit remaps
 
   #+END_SRC
 
+** Create a new org post
+  #+begin_src emacs-lisp
+(defun create-org-post()
+  "Creates yaml template for md-roam"
+  (interactive)
+  (insert
+   (format ":PROPERTIES:\n:ID: %s:END:\n#+title: %s\n"
+           (shell-command-to-string "uuidgen")
+           (file-name-base (buffer-file-name)))))
+  #+end_src
+
 * Final Settings
   #+BEGIN_SRC emacs-lisp
     ;; Miscellaneous final settings
