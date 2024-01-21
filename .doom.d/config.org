@@ -195,9 +195,8 @@ Pare edit remaps
 
     ;; Org roam UI settings
     (use-package! org-roam-ui
-      :after org-roam
-      ;; Configuration settings
-      )
+      :after org-roam)
+      ;; Configuration setting)
 
 
 
@@ -293,14 +292,24 @@ Pare edit remaps
           (todo (format "** TODO %s :%s:" goal terra)))
        (insert todo)))
 
-(defun create-blog (title)
-  "Creates the yaml entry for the blog post."
-  (interactive "sTitle: ")
-  (insert (format "---\ntitle: %s\ndate: %s\ndraft: true\ntags: []\n---" title (format-time-string "%Y-%m-%d"))))
-
+(setq lsp-rust-server 'rust-analyzer)
 
   #+END_SRC
 
+** helper function for counting words
+#+begin_src emacs-lisp
+(defun count-words-in-buffer ()
+  "Count the number of words in the current buffer."
+  (interactive)
+  (save-excursion
+    (let ((count 0))
+      (goto-char (point-min))
+      (while (< (point) (point-max))
+        (when (forward-word 1)
+          (setq count (1+ count))))
+      (message "Number of words in buffer: %d" count))))
+
+#+end_src
 ** Create a new org post
   #+begin_src emacs-lisp
 (defun create-org-post()
@@ -311,14 +320,6 @@ Pare edit remaps
            (shell-command-to-string "uuidgen")
            (file-name-base (buffer-file-name)))))
   #+end_src
-
-* Final Settings
-  #+BEGIN_SRC emacs-lisp
-    ;; Miscellaneous final settings
-    (setq lsp-rust-server 'rust-analyzer)
-    (setq doom-user-dir "/Users/user/.dotfiles/.doom.d/")
-    ;; Add other final settings
-  #+END_SRC
 
 * Ligatures
 #+BEGIN_SRC emacs-lisp
@@ -395,3 +396,4 @@ Pare edit remaps
   (set-fontset-font t ?⅔ (font-spec :family "Fira Code"))
 
 #+END_SRC
+
