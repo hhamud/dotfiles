@@ -95,7 +95,7 @@
       (null-device . "/dev/null"))))
  '(magit-todos-insert-after '(bottom) nil nil "Changed by setter of obsolete option `magit-todos-insert-at'")
  '(package-selected-packages
-   '(lua-mode hy-mode w3m sqlite spinner ron-mode pdf-tools package-lint graphql-mode exec-path-from-shell async-await))
+   '(wgrep lua-mode hy-mode w3m sqlite spinner ron-mode pdf-tools package-lint graphql-mode exec-path-from-shell async-await))
  '(safe-local-variable-values '((eval progn (pp-buffer) (indent-buffer))))
  '(warning-suppress-log-types '((emacs))))
 (custom-set-faces
@@ -104,4 +104,5 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(font-lock-comment-face ((t (:slant italic))))
- '(font-lock-keyword-face ((t (:slant italic)))))
+ '(font-lock-keyword-face ((t (:slant italic))))
+ '(ts-fold-replacement-face ((t (:foreground unspecified :box nil :inherit font-lock-comment-face :weight light)))))

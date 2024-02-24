@@ -85,12 +85,13 @@
                    ))))
           ))
 
-
 (setq org-columns-default-formatc
       "%25ITEM %TODO %3PRIORITY %CLOSED")
 
 (setq org-superstar-headline-bullets-list '("■" "▲" "━" "●" "•"))
 (setq org-superstar-cycle-headline-bullets nil)
+
+(setq org-agenda-inhibit-startup t)
 
 (setq org-outline-path-complete-in-steps nil)
 
@@ -175,19 +176,18 @@ Pare edit remaps
          :nie "(" #'paredit-wrap-round
          :nie "[" #'paredit-wrap-square
          :nie "{" #'paredit-wrap-curly))
+
+(defun my-auto-insert-dollar ()
+  "Automatically insert a dollar sign after inserting a dollar sign."
+  (when (and (eq major-mode 'markdown-mode)
+             (eq (char-before) ?$))
+    (insert "$")
+    (backward-char)))
+
+(add-hook 'post-self-insert-hook 'my-auto-insert-dollar)
   #+END_SRC
 
-* Highlighting
-
-  #+BEGIN_SRC emacs-lisp
-(after! hl-todo
-  (setq hl-todo-keyword-faces
-        `(("TEST" . "#ff0000")
-          ("NEXT" . ,(face-foreground 'font-lock-type-face)))))
-
-  #+END_SRC
-
-* Additional Packages
+* Org Agenda Helpers
   #+BEGIN_SRC emacs-lisp
     ;; Configuration for additional packages
     (use-package! websocket
@@ -197,8 +197,6 @@ Pare edit remaps
     (use-package! org-roam-ui
       :after org-roam)
       ;; Configuration setting)
-
-
 
 (defun copy-todo-to-file (todo-text)
   "Copy a completed todo to a file of your choosing."
@@ -223,17 +221,68 @@ Pare edit remaps
   (let ((todo-text (buffer-substring-no-properties start end)))
     (copy-todo-to-file todo-text)))
 
-
 (add-hook 'org-after-todo-state-change-hook
           (lambda ()
             (when (string= org-state "DONE")
               (copy-todo-to-file (org-get-heading t t)))))
 
+
+(setq lsp-rust-server 'rust-analyzer)
+  #+END_SRC
+
+** Helper functions to help manage goals
+#+begin_src elisp
+(defun todo-creator (goal)
+  "Creates a todo list"
+  (interactive "sWhat is the goal: ")
+  (let*  ((terms '("daily" "weekly" "monthly"))
+          (terra (completing-read "Choose a time period: " terms nil t))
+          (todo (format "** TODO %s :%s:" goal terra)))
+       (insert todo)))
+
+(defun org-review-calender-template ()
+"Creates a monthly review org template."
+(interactive)
+(insert (format "* What are my goals?:\n\n\n* What did I accomplish?:\n\n\n* What did I fail to accomplish and why?:\n\n")))
+
+#+end_src
+
+
+** Helper function for counting words
+#+begin_src emacs-lisp
+(defun count-words-in-buffer ()
+  "Count the number of words in the current buffer."
+  (interactive)
+  (save-excursion
+    (let ((count 0))
+      (goto-char (point-min))
+      (while (< (point) (point-max))
+        (when (forward-word 1)
+          (setq count (1+ count))))
+      (message "Number of words in buffer: %d" count))))
+#+end_src
+** Create a new org post
+  #+begin_src emacs-lisp
+(defun create-org-post()
+  "Creates yaml template for md-roam"
+  (interactive)
+  (insert
+   (format ":PROPERTIES:\n:ID: %s:END:\n#+title: %s\n"
+           (shell-command-to-string "uuidgen")
+           (file-name-base (buffer-file-name)))))
+  #+end_src
+
+* Buffer Management
+#+begin_src elisp
 ;; set default frame size upon open for emacs
 (add-to-list 'default-frame-alist '(height . 80))
 (add-to-list 'default-frame-alist '(width .  90))
 
-;;;; frame keybindings
+(global-set-key (kbd "C-c f") 'search-new-frame)
+(global-set-key (kbd "C-c d") 'delete-frame)
+(global-set-key (kbd "C-c t") 'new-terminal)
+(global-set-key (kbd "C-c n") 'search-project)
+
 (defun search-new-frame (workspace)
   "Creates a new frame after searching for a file."
   (interactive "Fselect file:")
@@ -254,11 +303,6 @@ Pare edit remaps
     (make-frame `((name . "vterm")
                   (buffer . ,(vterm))))))))
 
-(global-set-key (kbd "C-c f") 'search-new-frame)
-(global-set-key (kbd "C-c d") 'delete-frame)
-(global-set-key (kbd "C-c t") 'new-terminal)
-(global-set-key (kbd "C-c n") 'search-project)
-
 (defun cider-jackin ()
   "Create a new CIDER REPL frame."
   (interactive)
@@ -269,57 +313,8 @@ Pare edit remaps
     (delete-other-windows)
     (set-window-buffer (selected-window) cider-buffer)))
 
-(defun org-review-calender-template ()
-"Creates a monthly review org template."
-(interactive)
-(insert (format "* What are my goals?:\n\n\n* What did I accomplish?:\n\n\n* What did I fail to accomplish and why?:\n\n")))
-
-
-(defun my-auto-insert-dollar ()
-  "Automatically insert a dollar sign after inserting a dollar sign."
-  (when (and (eq major-mode 'markdown-mode)
-             (eq (char-before) ?$))
-    (insert "$")
-    (backward-char)))
-
-(add-hook 'post-self-insert-hook 'my-auto-insert-dollar)
-
-(defun todo-creator (goal)
-  "Creates a todo list"
-  (interactive "sWhat is the goal: ")
-  (let*  ((terms '("daily" "weekly" "monthly"))
-          (terra (completing-read "Choose a time period: " terms nil t))
-          (todo (format "** TODO %s :%s:" goal terra)))
-       (insert todo)))
-
-(setq lsp-rust-server 'rust-analyzer)
-
-  #+END_SRC
-
-** helper function for counting words
-#+begin_src emacs-lisp
-(defun count-words-in-buffer ()
-  "Count the number of words in the current buffer."
-  (interactive)
-  (save-excursion
-    (let ((count 0))
-      (goto-char (point-min))
-      (while (< (point) (point-max))
-        (when (forward-word 1)
-          (setq count (1+ count))))
-      (message "Number of words in buffer: %d" count))))
 
 #+end_src
-** Create a new org post
-  #+begin_src emacs-lisp
-(defun create-org-post()
-  "Creates yaml template for md-roam"
-  (interactive)
-  (insert
-   (format ":PROPERTIES:\n:ID: %s:END:\n#+title: %s\n"
-           (shell-command-to-string "uuidgen")
-           (file-name-base (buffer-file-name)))))
-  #+end_src
 
 * Ligatures
 #+BEGIN_SRC emacs-lisp
@@ -394,6 +389,5 @@ Pare edit remaps
   (set-fontset-font t ?• (font-spec :family "JetBrains Mono"))
   (set-fontset-font t ?⅓ (font-spec :family "Fira Code"))
   (set-fontset-font t ?⅔ (font-spec :family "Fira Code"))
-
 #+END_SRC
 

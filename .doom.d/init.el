@@ -116,7 +116,7 @@
        ;;beancount         ; mind the GAAP
        ;;cc                ; C > C++ == 1
        (clojure +lsp +tree-sitter)           ; java with a lisp
-       (common-lisp +lsp +tree-sitter)       ; if you've seen one lisp, you've seen them all
+       ;;(common-lisp +lsp +tree-sitter)       ; if you've seen one lisp, you've seen them all
        ;;coq               ; proofs-as-programs
        ;;crystal           ; ruby at the speed of c
        ;;csharp            ; unity, .NET, and mono shenanigans
@@ -150,7 +150,7 @@
        ;;nim               ; python + lisp at the speed of c
        ;;nix               ; I hereby declare "nix geht mehr!"
        ;;ocaml             ; an objective camel
-       (org +roam2 +noter +pretty +dragndrop) ;organize your plain life in plain text
+       (org +roam2 +noter +pretty +dragndrop +tree-sitter) ;organize your plain life in plain text
        ;;php               ; perl's insecure younger brother
        ;;plantuml          ; diagrams for confusing people more
        ;;purescript        ; javascript, but functional
@@ -171,7 +171,7 @@
        ;;terra             ; Earth and Moon in alignment for performance.
        ;;web               ; the tubes
        (yaml +lsp)             ; JSON, but readable
-       ;;zig               ; C, but simpler
+       (zig +lsp)               ; C, but simpler
 
        :email
        ;;(mu4e +org +gmail)
@@ -187,7 +187,6 @@
        ;;twitter           ; twitter client https://twitter.com/vnought
 
        :config
-
        literate
        (default +bindings +smartparens))
 
