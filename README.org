@@ -1,6 +1,6 @@
 #+title: README
 
-This is the
+This is the Emacs configuration and other scripts to be installed onto a new OS.
 
 * Installation
 
@@ -8,5 +8,5 @@ This is the
 #+begin_src sh
 git clone https://github.com/hhamud/dotfiles.git $HOME/.dotfiles
 cd $HOME/.dotfiles/scripts
-bash setup.sh
+bash scripts/setup.sh
 #+end_src

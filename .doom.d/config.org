@@ -1,6 +1,5 @@
 #+TITLE: Config
 
-* Introduction
   This document contains my personal configuration for Doom Emacs.
 
 * General Settings
@@ -39,7 +38,7 @@
   '(font-lock-keyword-face :slant italic))
   #+END_SRC
 
-* Org Mode Customisations
+* Org
   #+BEGIN_SRC emacs-lisp
 (after! org
   (setq org-agenda-custom-commands
@@ -162,32 +161,7 @@
   #+END_SRC
 
 
-
-* Key Bindings
-Pare edit remaps
-  #+BEGIN_SRC emacs-lisp
-(map!
- :map paredit-mode-map
- :leader (:prefix ("l" . "Lisps")
-         :nvie "f" #'paredit-forward-slurp-sexp
-         :nvie "b" #'paredit-forward-barf-sexp
-         :nie "k" #'paredit-kill-region
-         :nie "s" #'paredit-splice-sexp
-         :nie "(" #'paredit-wrap-round
-         :nie "[" #'paredit-wrap-square
-         :nie "{" #'paredit-wrap-curly))
-
-(defun my-auto-insert-dollar ()
-  "Automatically insert a dollar sign after inserting a dollar sign."
-  (when (and (eq major-mode 'markdown-mode)
-             (eq (char-before) ?$))
-    (insert "$")
-    (backward-char)))
-
-(add-hook 'post-self-insert-hook 'my-auto-insert-dollar)
-  #+END_SRC
-
-* Org Agenda Helpers
+** Org Agenda Helpers
   #+BEGIN_SRC emacs-lisp
     ;; Configuration for additional packages
     (use-package! websocket
@@ -227,10 +201,9 @@ Pare edit remaps
               (copy-todo-to-file (org-get-heading t t)))))
 
 
-(setq lsp-rust-server 'rust-analyzer)
   #+END_SRC
 
-** Helper functions to help manage goals
+*** Helper functions to help manage goals
 #+begin_src elisp
 (defun todo-creator (goal)
   "Creates a todo list"
@@ -240,6 +213,8 @@ Pare edit remaps
           (todo (format "** TODO %s :%s:" goal terra)))
        (insert todo)))
 
+(global-set-key (kbd "C-c j") 'todo-creator)
+
 (defun org-review-calender-template ()
 "Creates a monthly review org template."
 (interactive)
@@ -248,7 +223,7 @@ Pare edit remaps
 #+end_src
 
 
-** Helper function for counting words
+*** Helper function for counting words
 #+begin_src emacs-lisp
 (defun count-words-in-buffer ()
   "Count the number of words in the current buffer."
@@ -261,7 +236,8 @@ Pare edit remaps
           (setq count (1+ count))))
       (message "Number of words in buffer: %d" count))))
 #+end_src
-** Create a new org post
+
+*** Create a new org post
   #+begin_src emacs-lisp
 (defun create-org-post()
   "Creates yaml template for md-roam"
@@ -272,38 +248,74 @@ Pare edit remaps
            (file-name-base (buffer-file-name)))))
   #+end_src
 
+* Key Bindings
+Pare edit remaps
+  #+BEGIN_SRC emacs-lisp
+(map!
+ :map paredit-mode-map
+ :leader (:prefix ("l" . "Lisps")
+         :nvie "f" #'paredit-forward-slurp-sexp
+         :nvie "b" #'paredit-forward-barf-sexp
+         :nie "k" #'paredit-kill-region
+         :nie "s" #'paredit-splice-sexp
+         :nie "(" #'paredit-wrap-round
+         :nie "[" #'paredit-wrap-square
+         :nie "{" #'paredit-wrap-curly))
+
+(defun my-auto-insert-dollar ()
+  "Automatically insert a dollar sign after inserting a dollar sign."
+  (when (and (eq major-mode 'markdown-mode)
+             (eq (char-before) ?$))
+    (insert "$")
+    (backward-char)))
+
+(add-hook 'post-self-insert-hook 'my-auto-insert-dollar)
+  #+END_SRC
+
 * Buffer Management
 #+begin_src elisp
 ;; set default frame size upon open for emacs
 (add-to-list 'default-frame-alist '(height . 80))
 (add-to-list 'default-frame-alist '(width .  90))
 
-(global-set-key (kbd "C-c f") 'search-new-frame)
+(global-set-key (kbd "C-c f") 'hhamud/search-new-frame)
+(global-set-key (kbd "C-c b") 'hhamud/search-recent)
 (global-set-key (kbd "C-c d") 'delete-frame)
-(global-set-key (kbd "C-c t") 'new-terminal)
-(global-set-key (kbd "C-c n") 'search-project)
+(global-set-key (kbd "C-c t") 'hhamud/new-terminal)
+(global-set-key (kbd "C-c n") 'hhamud/search-project)
 
-(defun search-new-frame (workspace)
+(defun hhamud/search-new-frame (workspace)
   "Creates a new frame after searching for a file."
   (interactive "Fselect file:")
   (let ((new_buffer (find-file-noselect workspace)))
   (make-frame)
   (set-window-buffer (selected-window) new_buffer)))
 
-(defun search-project ()
-  "Creates a new frame from the projects directory."
-  (interactive)
-  (let ((file (read-file-name "Select file: " "~/Documents/projects/")))
-    (find-file-other-frame file)))
+(defun hhamud/search-recent (workspace)
+  "Creates a new frame after searching for a file in the most recent frame."
+  (interactive "P")
+  (let ((new-buffer (+ivy/switch-workspace-buffer workspace)))
+    (make-frame)
+    (set-window-buffer (selected-window) new-buffer)))
 
-(defun new-terminal ()
+(defun hhamud/search-project ()
+  "Creates a new frame from the selected PROJECT or INFO directory."
+  (interactive)
+  (let* ((option (completing-read "Select option: " '("PROJECT" "INFO") nil t))
+         (directory (cond
+                     ((string= option "PROJECT") "~/Documents/projects")
+                     ((string= option "INFO") "~/Documents/org/info"))))
+    (let ((file (read-file-name "Select file: " directory)))
+      (find-file-other-frame file))))
+
+(defun hhamud/new-terminal ()
   "Create a new frame with a vterm buffer."
   (interactive)
   (let ((vterm-buffer
     (make-frame `((name . "vterm")
                   (buffer . ,(vterm))))))))
 
-(defun cider-jackin ()
+(defun hhamud/cider-jackin ()
   "Create a new CIDER REPL frame."
   (interactive)
   (let ((cider-buffer
@@ -312,8 +324,6 @@ Pare edit remaps
     (cider-switch-to-repl-buffer)
     (delete-other-windows)
     (set-window-buffer (selected-window) cider-buffer)))
-
-
 #+end_src
 
 * Ligatures
@@ -391,3 +401,68 @@ Pare edit remaps
   (set-fontset-font t ?⅔ (font-spec :family "Fira Code"))
 #+END_SRC
 
+* Dap debugging
+#+begin_src emacs-lisp
+(use-package dap-mode
+  :ensure
+  :config
+  (dap-ui-mode)
+  (dap-ui-controls-mode 1)
+
+  ;; (require 'dap-lldb)
+  (require 'dap-cpptools)
+  ;; (require 'dap-gdb-lldb)
+  ;; installs .extension/vscode
+  ;; (dap-gdb-lldb-setup)
+  (dap-cpptools-setup)
+(dap-register-debug-template "Rust::CppTools Run Configuration"
+                                 (list :type "cppdbg"
+                                       :request "launch"
+                                       :name "Rust::Run"
+                                       :MIMode "gdb"
+                                       :miDebuggerPath "rust-gdb"
+                                       :environment []
+                                       :program "${workspaceFolder}/target/debug/REPLACETHIS"
+                                       :cwd "${workspaceFolder}"
+                                       :console "external"
+                                       :dap-compilation "cargo build"
+                                       :dap-compilation-dir "${workspaceFolder}")))
+
+  (with-eval-after-load 'dap-mode
+    (setq dap-default-terminal-kind "integrated") ;; Make sure that terminal programs open a term for I/O in an Emacs buffer
+    (dap-auto-configure-mode +1))
+
+#+end_src
+
+* AI
+#+begin_src emacs-lisp
+(use-package! gptel
+ :config
+ (gptel-make-anthropic "Claude"
+  :stream t
+  :key (hhamud/get-key "CLAUDE"))
+(setq-default
+ gptel-model "mistral-openorca"
+ gptel-backend (gptel-make-ollama "Ollama"
+  :host "localhost:11434"
+  :stream t
+  :models '("mistral-openorca"))))
+
+(defun hhamud/get-key (key)
+  "Gets VALUE of KEY from the env file."
+  (let ((env-file (expand-file-name "./.env"))
+        (regexp (format "^%s=\\(.*\\)$" key)))
+    (if (file-exists-p env-file)
+        (with-temp-buffer
+          (insert-file-contents env-file)
+          (goto-char (point-min))
+          (if (re-search-forward regexp nil t)
+              (match-string 1)
+            (message (format"%s key not found in .env file" key))))
+      (message "ENV file (.env) not found"))))
+#+end_src
+
+* LSP
+#+begin_src elisp
+(setq lsp-rust-server 'rust-analyzer)
+#+end_src

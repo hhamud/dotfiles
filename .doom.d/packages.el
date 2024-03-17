@@ -53,3 +53,5 @@
 
 (package! websocket
   :recipe (:host github :repo "ahyatt/emacs-websocket" :files ("websocket.el")))
+
+(package! gptel)

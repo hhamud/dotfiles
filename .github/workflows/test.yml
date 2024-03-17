@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Lint
+        uses: azohra/shell-linter@latest
+        with:
+          path: "scripts"
+
+  linux-test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, ubuntu-22.04]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run script
+        run: |
+          bash scripts/setup.sh
+      - name: Test installations
+        run: |
+          bash -c "source scripts/setup.sh && test_installations"
+
+  macos-test:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run script
+        run: |
+          bash scripts/setup.sh
+      - name: Test installations
+        run: |
+          bash -c "source scripts/setup.sh && test_installations"
+
+  windows-test:
+    runs-on: windows-2019
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Chocolatey
+        run: |
+          Set-ExecutionPolicy Bypass -Scope Process -Force
+          [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+          iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+      - name: Run script
+        run: |
+          bash scripts/setup.sh
+      - name: Test installations
+        run: |
+          bash -c "source scripts/setup.sh && test_installations"
