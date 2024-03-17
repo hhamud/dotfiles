@@ -2,6 +2,8 @@
 
 This is the Emacs configuration and other scripts to be installed onto a new OS.
 
+[[https://github.com/hhamud/dotfiles/actions/workflows/test.yml][https://github.com/hhamud/dotfiles/actions/workflows/test.yml/badge.svg?style=svg]]
+
 * Installation
 
 - Copy and paste the code to auto install the dotfiles
