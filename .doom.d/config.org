@@ -1,3 +1,4 @@
+#+OPTIONS: toc:2
 #+TITLE: Config
 
   This document contains my personal configuration for Doom Emacs.
@@ -124,9 +125,10 @@
     org-edit-src-content-indentation 0))
   #+END_SRC
 
+
 ** Org Custom Functions
   #+BEGIN_SRC emacs-lisp
-(defun org-roam-backlink ()
+(defun hhamud/org-roam-backlink ()
      "display the backlinks of the current org-roam buffer"
      (interactive)
      (progn
@@ -160,19 +162,26 @@
        'org-link 'org-footnote))))
   #+END_SRC
 
+** Org Capture Templates
+Creates a quick capture template to create a daily todo item for either the daily tasks or for the project tasks. It will check if the file already exists and if it does not then it will error out.
+
+#+begin_src elisp
+(setq org-capture-templates
+      '(("j" "Journal" entry (file+datetree "~/org/journal.org")
+         "* %?\nEntered on %U\n  %i\n  %a")))
+#+end_src
 
 ** Org Agenda Helpers
   #+BEGIN_SRC emacs-lisp
-    ;; Configuration for additional packages
-    (use-package! websocket
-      :after org-roam)
-
+;; Configuration for additional packages
+(use-package! websocket
+:after org-roam)
     ;; Org roam UI settings
-    (use-package! org-roam-ui
-      :after org-roam)
-      ;; Configuration setting)
+(use-package! org-roam-ui
+:after org-roam)
+;; Configuration setting
 
-(defun copy-todo-to-file (todo-text)
+(defun hhamud/copy-todo-to-file (todo-text)
   "Copy a completed todo to a file of your choosing."
   (interactive "sTodo text: ")
   (let* ((dir "~/Documents/org/agenda/review/2024/")
@@ -189,23 +198,51 @@
     (kill-buffer)))  ;; Close the file
 
 
-(defun copy-region-todo-to-file (start end)
+(defun hhamud/copy-region-todo-to-file (start end)
   "Copy the content of the selected region as a todo to a file of your choosing."
   (interactive "r")
   (let ((todo-text (buffer-substring-no-properties start end)))
-    (copy-todo-to-file todo-text)))
+    (hhamud/copy-todo-to-file todo-text)))
 
 (add-hook 'org-after-todo-state-change-hook
           (lambda ()
             (when (string= org-state "DONE")
-              (copy-todo-to-file (org-get-heading t t)))))
+              (hhamud/copy-todo-to-file (org-get-heading t t)))))
 
 
+(defun hhamud/get-current-week-string ()
+  "Return the current week in the format 'mar18-24', always starting on Monday."
+  (let* ((time (current-time))
+         (decoded-time (decode-time time))
+         (current-dow (nth 6 decoded-time)) ; 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+         (days-to-monday (if (= current-dow 0) 6 (- current-dow 1)))
+         (monday-time (time-subtract time (* days-to-monday 86400)))
+         (monday-decoded (decode-time monday-time))
+         (week-start (encode-time 0 0 0 (nth 3 monday-decoded) (nth 4 monday-decoded) (nth 5 monday-decoded) (nth 8 monday-decoded)))
+         (week-end (time-add week-start 604799))
+         (week-start-string (downcase (format-time-string "%b%d" week-start)))
+         (week-end-string (format-time-string "%d" week-end)))
+    (concat week-start-string "-" week-end-string)))
+
+(defun hhamud/path-builder ()
+  "Helps to build the path to org review."
+        (format "~/Documents/org/agenda/review/2024/%s/%s"
+           (downcase (format-time-string "%B"))
+             (hhamud/get-current-week-string)))
+
+(defun hhamud/daily-viewer ()
+  "Displays the daily todo list in a new buffer at the bottom."
+  (interactive)
+  (let* ((day (format-time-string "%b%d"))
+         (path (hhamud/path-builder))
+         (file-path (format "%s/%s.org" path day))
+         (buffer (find-file-noselect file-path)))
+    (switch-to-buffer-other-window buffer)))
   #+END_SRC
 
 *** Helper functions to help manage goals
 #+begin_src elisp
-(defun todo-creator (goal)
+(defun hhamud/todo-creator (goal)
   "Creates a todo list"
   (interactive "sWhat is the goal: ")
   (let*  ((terms '("daily" "weekly" "monthly"))
@@ -215,7 +252,7 @@
 
 (global-set-key (kbd "C-c j") 'todo-creator)
 
-(defun org-review-calender-template ()
+(defun hhamud/org-review-calender-template ()
 "Creates a monthly review org template."
 (interactive)
 (insert (format "* What are my goals?:\n\n\n* What did I accomplish?:\n\n\n* What did I fail to accomplish and why?:\n\n")))
@@ -225,7 +262,7 @@
 
 *** Helper function for counting words
 #+begin_src emacs-lisp
-(defun count-words-in-buffer ()
+(defun hhamud/count-words-in-buffer ()
   "Count the number of words in the current buffer."
   (interactive)
   (save-excursion
@@ -239,7 +276,7 @@
 
 *** Create a new org post
   #+begin_src emacs-lisp
-(defun create-org-post()
+(defun hhamud/create-org-post()
   "Creates yaml template for md-roam"
   (interactive)
   (insert
@@ -301,9 +338,10 @@ Pare edit remaps
 (defun hhamud/search-project ()
   "Creates a new frame from the selected PROJECT or INFO directory."
   (interactive)
-  (let* ((option (completing-read "Select option: " '("PROJECT" "INFO") nil t))
+  (let* ((option (completing-read "Select option: " '("PROJECT" "INFO" "PROGRAMMING") nil t))
          (directory (cond
-                     ((string= option "PROJECT") "~/Documents/projects")
+                     ((string= option "PROJECT") "~/Documents/org/agenda/projects")
+                     ((string= option "PROGRAMMING") "~/Documents/projects")
                      ((string= option "INFO") "~/Documents/org/info"))))
     (let ((file (read-file-name "Select file: " directory)))
       (find-file-other-frame file))))
@@ -434,6 +472,24 @@ Pare edit remaps
 
 #+end_src
 
+
+* Custom Functions
+#+begin_src elisp
+(defun hhamud/get-key (key)
+  "Gets VALUE of KEY from the env file."
+  (interactive "skey: ")
+  (let ((env-file (expand-file-name "./.env"))
+        (regexp (format "^%s=\\(.*\\)$" key)))
+    (if (file-exists-p env-file)
+        (with-temp-buffer
+          (insert-file-contents env-file)
+          (goto-char (point-min))
+          (if (re-search-forward regexp nil t)
+              (match-string 1)
+            (message (format"%s key not found in .env file" key))))
+      (message "ENV file (.env) not found"))))
+#+end_src
+
 * AI
 #+begin_src emacs-lisp
 (use-package! gptel
@@ -448,21 +504,17 @@ Pare edit remaps
   :stream t
   :models '("mistral-openorca"))))
 
-(defun hhamud/get-key (key)
-  "Gets VALUE of KEY from the env file."
-  (let ((env-file (expand-file-name "./.env"))
-        (regexp (format "^%s=\\(.*\\)$" key)))
-    (if (file-exists-p env-file)
-        (with-temp-buffer
-          (insert-file-contents env-file)
-          (goto-char (point-min))
-          (if (re-search-forward regexp nil t)
-              (match-string 1)
-            (message (format"%s key not found in .env file" key))))
-      (message "ENV file (.env) not found"))))
+
+(setq gptel-log-level 'debug)
 #+end_src
+
 
 * LSP
 #+begin_src elisp
 (setq lsp-rust-server 'rust-analyzer)
+#+end_src
+
+* Arabic
+#+begin_src elisp
+(set-fontset-font t 'arabic "Times New Roman")
 #+end_src
