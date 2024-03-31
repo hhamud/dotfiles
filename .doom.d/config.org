@@ -230,15 +230,35 @@ Creates a quick capture template to create a daily todo item for either the dail
            (downcase (format-time-string "%B"))
              (hhamud/get-current-week-string)))
 
-(defun hhamud/daily-viewer ()
-  "Displays the daily todo list in a new buffer at the bottom."
+
+(defun hhamud/text-in-buffer-p (text)
+  "Check if the given TEXT is present in the current buffer."
+  (save-excursion
+    (goto-char (point-min))
+    (if (search-forward text nil t)
+        t
+      nil)))
+
+(defun hhamud/reviewer ()
+  "Displays the daily todo list in a new buffer."
   (interactive)
-  (let* ((day (format-time-string "%b%d"))
+  (let* ((time (completing-read "Choose a time period: " '("daily" "weekly" "monthly")))
          (path (hhamud/path-builder))
-         (file-path (format "%s/%s.org" path day))
+         (file-path
+          (cond
+           ((string= time "daily") (format "%s/%s.org" path (downcase (format-time-string "%b%d"))))
+           ((string= time "weekly") (format "%s/weekly-review.org" path))
+           ((string= time "monthly") (format "~/Documents/org/agenda/review/2024/%s/monthly-review.org" (downcase (format-time-string "%B"))))))
          (buffer (find-file-noselect file-path)))
-    (switch-to-buffer-other-window buffer)))
+    (switch-to-buffer-other-window buffer)
+    (if (hhamud/text-in-buffer-p "* What")
+        (message "Org todo text already exists")
+      (progn
+        (insert (format "#+TITLE: %s" (file-name-base buffer)))
+        (newline)
+        (hhamud/org-review-calender-template)))))
   #+END_SRC
+
 
 *** Helper functions to help manage goals
 #+begin_src elisp
@@ -250,13 +270,12 @@ Creates a quick capture template to create a daily todo item for either the dail
           (todo (format "** TODO %s :%s:" goal terra)))
        (insert todo)))
 
-(global-set-key (kbd "C-c j") 'todo-creator)
+(global-set-key (kbd "C-c j") 'hhamud/todo-creator)
 
 (defun hhamud/org-review-calender-template ()
 "Creates a monthly review org template."
 (interactive)
 (insert (format "* What are my goals?:\n\n\n* What did I accomplish?:\n\n\n* What did I fail to accomplish and why?:\n\n")))
-
 #+end_src
 
 
@@ -299,14 +318,14 @@ Pare edit remaps
          :nie "[" #'paredit-wrap-square
          :nie "{" #'paredit-wrap-curly))
 
-(defun my-auto-insert-dollar ()
+(defun hhamud/my-auto-insert-dollar ()
   "Automatically insert a dollar sign after inserting a dollar sign."
   (when (and (eq major-mode 'markdown-mode)
              (eq (char-before) ?$))
     (insert "$")
     (backward-char)))
 
-(add-hook 'post-self-insert-hook 'my-auto-insert-dollar)
+(add-hook 'post-self-insert-hook 'hhamud/my-auto-insert-dollar)
   #+END_SRC
 
 * Buffer Management
@@ -444,7 +463,7 @@ Pare edit remaps
 (use-package dap-mode
   :ensure
   :config
-  (dap-ui-mode)
+  (dap-ui-mode  )
   (dap-ui-controls-mode 1)
 
   ;; (require 'dap-lldb)
@@ -492,22 +511,15 @@ Pare edit remaps
 
 * AI
 #+begin_src emacs-lisp
-(use-package! gptel
- :config
- (gptel-make-anthropic "Claude"
-  :stream t
-  :key (hhamud/get-key "CLAUDE"))
-(setq-default
- gptel-model "mistral-openorca"
- gptel-backend (gptel-make-ollama "Ollama"
-  :host "localhost:11434"
-  :stream t
-  :models '("mistral-openorca"))))
-
-
-(setq gptel-log-level 'debug)
+(use-package! elm)
 #+end_src
 
+* Markdown
+#+begin_src elisp
+(use-package grip-mode
+  :ensure t
+  :hook (markdown-mode . grip-mode))
+#+end_src
 
 * LSP
 #+begin_src elisp
@@ -518,3 +530,4 @@ Pare edit remaps
 #+begin_src elisp
 (set-fontset-font t 'arabic "Times New Roman")
 #+end_src
+
