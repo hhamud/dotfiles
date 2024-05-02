@@ -230,7 +230,6 @@ Creates a quick capture template to create a daily todo item for either the dail
            (downcase (format-time-string "%B"))
              (hhamud/get-current-week-string)))
 
-
 (defun hhamud/text-in-buffer-p (text)
   "Check if the given TEXT is present in the current buffer."
   (save-excursion
@@ -254,7 +253,7 @@ Creates a quick capture template to create a daily todo item for either the dail
     (if (hhamud/text-in-buffer-p "* What")
         (message "Org todo text already exists")
       (progn
-        (insert (format "#+TITLE: %s" (file-name-base buffer)))
+        (insert (format "#+TITLE: %s" (file-name-base file-path)))
         (newline)
         (hhamud/org-review-calender-template)))))
   #+END_SRC
@@ -523,7 +522,10 @@ Pare edit remaps
 
 * LSP
 #+begin_src elisp
-(setq lsp-rust-server 'rust-analyzer)
+(use-package! lsp-bridge
+  :config
+  (setq lsp-bridge-enable-log nil)
+  (global-lsp-bridge-mode))
 #+end_src
 
 * Arabic
