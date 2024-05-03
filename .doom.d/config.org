@@ -492,7 +492,12 @@ Pare edit remaps
 (use-package! lsp-bridge
   :config
   (setq lsp-bridge-enable-log t)
-  (global-lsp-bridge-mode))
+  (setq lsp-bridge-enable-inlay-hint t)
+  (setq lsp-bridge-enable-hover-diagnostic t)
+  (setq lsp-bridge-signature-show-with-frame t)
+  (define-key lsp-bridge-mode-map (kbd "SPC c a") #'lsp-bridge-code-action))
+
+(setenv "PYTHONPATH" "/opt/homebrew/lib/python3.10/site-packages")
 #+end_src
 
 * Arabic
