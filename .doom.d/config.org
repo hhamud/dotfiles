@@ -489,15 +489,7 @@ Pare edit remaps
 
 * LSP
 #+begin_src elisp
-(use-package! lsp-bridge
-  :config
-  (setq lsp-bridge-enable-log t)
-  (setq lsp-bridge-enable-inlay-hint t)
-  (setq lsp-bridge-enable-hover-diagnostic t)
-  (setq lsp-bridge-signature-show-with-frame t)
-  (define-key lsp-bridge-mode-map (kbd "SPC c a") #'lsp-bridge-code-action))
-
-(setenv "PYTHONPATH" "/opt/homebrew/lib/python3.10/site-packages")
+-(setq lsp-rust-server 'rust-analyzer)
 #+end_src
 
 * Arabic
