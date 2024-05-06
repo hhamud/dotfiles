@@ -209,20 +209,20 @@ Creates a quick capture template to create a daily todo item for either the dail
             (when (string= org-state "DONE")
               (hhamud/copy-todo-to-file (org-get-heading t t)))))
 
-
 (defun hhamud/get-current-week-string ()
-  "Return the current week in the format 'mar01-07', starting from the first day of the month until the following Sunday."
+  "Return the current week in the format 'mar01-07', starting from the Monday of the current week until the following Sunday."
   (let* ((time (current-time))
          (decoded-time (decode-time time))
          (current-day (nth 3 decoded-time))
          (current-month (nth 4 decoded-time))
          (current-year (nth 5 decoded-time))
-         (first-day-of-month-time (encode-time 0 0 0 1 current-month current-year))
-         (first-day-of-month-dow (nth 6 (decode-time first-day-of-month-time)))
-         (days-to-sunday (- 7 first-day-of-month-dow))
-         (week-end-day (+ 1 days-to-sunday))
-         (week-start-string (downcase (format-time-string "%b%02d" first-day-of-month-time)))
-         (week-end-string (format "%02d" week-end-day)))
+         (current-dow (nth 6 decoded-time))
+         (days-to-monday (- current-dow 1))
+         (monday-time (time-subtract time (days-to-time (* days-to-monday 86400))))
+         (monday-day (nth 3 (decode-time monday-time)))
+         (sunday-day (+ monday-day 6))
+         (week-start-string (downcase (format-time-string "%b%02d" monday-time)))
+         (week-end-string (format "%02d" sunday-day)))
     (concat week-start-string "-" week-end-string)))
 
 (defun hhamud/path-builder ()
