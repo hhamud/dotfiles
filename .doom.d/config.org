@@ -88,8 +88,8 @@
 (setq org-columns-default-formatc
       "%25ITEM %TODO %3PRIORITY %CLOSED")
 
-(setq org-superstar-headline-bullets-list '("■" "▲" "━" "●" "•"))
-(setq org-superstar-cycle-headline-bullets nil)
+;;(setq org-superstar-headline-bullets-list '("■" "▲" "━" "●" "•"))
+;;(setq org-superstar-cycle-headline-bullets nil)
 
 (setq org-agenda-inhibit-startup t)
 
@@ -162,15 +162,6 @@
        'org-link 'org-footnote))))
   #+END_SRC
 
-** Org Capture Templates
-Creates a quick capture template to create a daily todo item for either the daily tasks or for the project tasks. It will check if the file already exists and if it does not then it will error out.
-
-#+begin_src elisp
-(setq org-capture-templates
-      '(("j" "Journal" entry (file+datetree "~/org/journal.org")
-         "* %?\nEntered on %U\n  %i\n  %a")))
-#+end_src
-
 ** Org Agenda Helpers
   #+BEGIN_SRC emacs-lisp
 ;; Configuration for additional packages
@@ -209,21 +200,34 @@ Creates a quick capture template to create a daily todo item for either the dail
             (when (string= org-state "DONE")
               (hhamud/copy-todo-to-file (org-get-heading t t)))))
 
+
 (defun hhamud/get-current-week-string ()
-  "Return the current week in the format 'mar01-07', starting from the Monday of the current week until the following Sunday."
+  "Return the current week in the format 'mar18-24', always starting on Monday.
+   If the month ends in the middle of the week, return the current week in the same format but ending on the last day of the month 'may27-31'.
+   If the new month starts in the middle of the week start on that day until the last day of the week. e.g 'jun01-02'"
+  (interactive)
   (let* ((time (current-time))
          (decoded-time (decode-time time))
-         (current-day (nth 3 decoded-time))
-         (current-month (nth 4 decoded-time))
-         (current-year (nth 5 decoded-time))
-         (current-dow (nth 6 decoded-time))
-         (days-to-monday (- current-dow 1))
-         (monday-time (time-subtract time (days-to-time (* days-to-monday 86400))))
-         (monday-day (nth 3 (decode-time monday-time)))
-         (sunday-day (+ monday-day 6))
-         (week-start-string (downcase (format-time-string "%b%02d" monday-time)))
-         (week-end-string (format "%02d" sunday-day)))
-    (concat week-start-string "-" week-end-string)))
+         (current-dow (nth 6 decoded-time)) ; 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+         (days-to-monday (if (= current-dow 0) 6 (- current-dow 1)))
+         (monday-time (time-subtract time (* days-to-monday 86400)))
+         (monday-decoded (decode-time monday-time))
+         (week-start (encode-time 0 0 0 (nth 3 monday-decoded) (nth 4 monday-decoded) (nth 5 monday-decoded) (nth 8 monday-decoded)))
+         (week-end (time-add week-start 518399))
+         (week-end-decoded (decode-time week-end))
+         (month-end-day (calendar-last-day-of-month (nth 4 week-end-decoded) (nth 5 week-end-decoded)))
+         (month-start-day (nth 3 decoded-time))
+         (week-start-string (downcase (format-time-string "%b%d" week-start)))
+         (week-end-string (format-time-string "%d" (if (> (nth 3 week-end-decoded) month-end-day)
+                                                        (encode-time 0 0 0 month-end-day (nth 4 week-end-decoded) (nth 5 week-end-decoded))
+                                                      week-end)))
+         (new-month-start-string (if (and (> month-start-day 1) (<= month-start-day (nth 3 week-end-decoded)))
+                                     (downcase (format-time-string "%b%d" time))
+                                   "")))
+    (if (string= new-month-start-string "")
+        (concat week-start-string "-" week-end-string)
+      (concat new-month-start-string "-" week-end-string))))
+
 
 (defun hhamud/path-builder ()
   "Helps to build the path to org review."
@@ -489,7 +493,7 @@ Pare edit remaps
 
 * LSP
 #+begin_src elisp
--(setq lsp-rust-server 'rust-analyzer)
+(setq lsp-rust-server 'rust-analyzer)
 #+end_src
 
 * Arabic
