@@ -1,19 +1,18 @@
 #+OPTIONS: toc:2
 #+TITLE: Config
 
-  This document contains my personal configuration for Doom Emacs.
+This document contains my personal configuration for Vanilla Emacs.
 
 * General Settings
   #+BEGIN_SRC emacs-lisp
-    (setq user-full-name "Hamza Hamud"
-          user-mail-address "self@hamzahamud.com")
-
+(setq user-full-name "Hamza Hamud"
+        user-mail-address "self@hamzahamud.com")
     ;; Set default line numbers to relative
-    (setq display-line-numbers-type t)
-  #+END_SRC
+(setq display-line-numbers-type t)
+#+END_SRC
 
-* Doom Themes and Fonts
-  This section outlines some additional functions and macros that are useful for configuring Doom Emacs.
+* Themes and Fonts
+  This section outlines some additional functions and macros that are useful for configuring Emacs.
 
   - ~load!'~: Used for loading external ~*.el~ files relative to the current file.
   - ~use-package!'~: For configuring packages within Emacs.
@@ -21,12 +20,8 @@
   - ~add-load-path!'~: Adds directories to the ~load-path~, relative to the current file. Emacs searches the ~load-path~ when loading packages with ~require~ or ~use-package~.
   - ~map!'~: Used for binding new keys.
 
-  To get information about any of these functions/macros, move the cursor over the highlighted symbol and press ~K~ (non-evil users must press ~C-c c k~). This will open documentation for the function/macro, including demos of how they are used.
-
-  To see how these functions/macros are implemented, you can use ~gd~ (or ~C-c c d~) to jump to their definition.
-
   #+BEGIN_SRC emacs-lisp
-;; doom themes
+;; themes
 (setq doom-theme 'doom-spacegrey)
     ;; Set a custom font. Font choice can be important for performance.
 (setq doom-font (font-spec :family "JetBrains Mono" :size 15 :weight 'light))
@@ -93,7 +88,7 @@
 (setq org-outline-path-complete-in-steps nil)
 
 
-(setq org-todo-keywords        ; This overwrites the default Doom org-todo-keywords
+(setq org-todo-keywords        ; This overwrites the default org-todo-keywords
         '((sequence
            "TODO(t)"           ; A task that is ready to be tackled
            "WAIT(w)"           ; Something is holding up this task
@@ -484,4 +479,3 @@ If the new month starts in the middle of the week, start on that day until the l
 #+begin_src elisp
 (set-fontset-font t 'arabic "Times New Roman")
 #+end_src
-
