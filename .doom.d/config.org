@@ -480,8 +480,81 @@ If the new month starts in the middle of the week, start on that day until the l
 (setq lsp-response-timeout 3000)
 #+end_src
 
+* Zig
+#+begin_src elisp
+(unless (featurep :system 'windows)
+  (setq lsp-zig-download-url-format "https://github.com/zigtools/zls/releases/latest/download/zls-%s-%s.tar.xz"))
+#+end_src
+
 * Arabic
 #+begin_src elisp
 (set-fontset-font t 'arabic "Times New Roman")
 #+end_src
 
+* Email
+#+begin_src elisp
+(add-to-list 'load-path "/opt/homebrew/Cellar/mu/1.12.5/share/emacs/site-lisp/mu/mu4e")
+
+;; set backend to use offlineimap
+(setq +mu4e-backend 'offlineimap)
+
+;; use mu4e for e-mail in emacs
+(setq mail-user-agent 'mu4e-user-agent)
+
+(setq mu4e-drafts-folder "/Personal/[Gmail].Drafts")
+(setq mu4e-sent-folder   "/Personal/[Gmail].Sent Mail")
+(setq mu4e-trash-folder  "/Personal/[Gmail].Trash")
+(setq mu4e-refile-folder  "/Personal/[Gmail].All Mail")
+
+;; don't save message to Sent Messages, Gmail/IMAP takes care of this
+(setq mu4e-sent-messages-behavior 'delete)
+
+;; (See the documentation for `mu4e-sent-messages-behavior' if you have
+;; additional non-Gmail addresses and want assign them different
+;; behavior.)
+
+;; setup some handy shortcuts
+;; you can quickly switch to your Inbox -- press ``ji''
+;; then, when you want archive some messages, move them to
+;; the 'All Mail' folder by pressing ``ma''.
+
+(setq mu4e-maildir-shortcuts
+    '( (:maildir "/Personal/INBOX"              :key ?i)
+       (:maildir "/Personal/[Gmail].Sent Mail"  :key ?s)
+       (:maildir "/Personal/[Gmail].All Mail"  :key ?a)
+       (:maildir "/Personal/[Gmail].Trash"      :key ?t)))
+
+;; allow for updating mail using 'U' in the main view:
+(setq mu4e-get-mail-command "offlineimap")
+
+;; something about ourselves
+(setq
+   user-mail-address "hamza.h.hamud@gmail.com"
+   user-full-name  "Hamza Hamud")
+
+;; sending mail -- replace USERNAME with your gmail username
+;; also, make sure the gnutls command line utils are installed
+;; package 'gnutls-bin' in Debian/Ubuntu
+
+
+(setq message-send-mail-function 'smtpmail-send-it
+      starttls-use-gnutls t
+      smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil))
+      smtpmail-default-smtp-server "smtp.gmail.com"
+      smtpmail-smtp-server "smtp.gmail.com"
+      smtpmail-smtp-service 587)
+
+;; don't keep message buffers around
+(setq message-kill-buffer-on-exit t)
+#+end_src
+
+
+* ERC
+#+begin_src elisp
+;;; fixes issue with erc not accepting user parameter
+(defadvice! fixed-erc--auth-source-determine-params-merge (plist)
+  :filter-return #'erc--auth-source-determine-params-merge
+  (let ((user (plist-get plist :user)))
+    (plist-put plist :user (or (car-safe user) user))
+    plist))
+#+end_src

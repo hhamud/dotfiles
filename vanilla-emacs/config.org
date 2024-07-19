@@ -1,5 +1,6 @@
 #+OPTIONS: toc:2
 #+TITLE: Config
+#+PROPERTY: header-args:emacs-lisp :tangle ~/.emacs.d/init.el
 
 This document contains my personal configuration for Vanilla Emacs.
 
@@ -11,32 +12,54 @@ This document contains my personal configuration for Vanilla Emacs.
 (setq display-line-numbers-type t)
 #+END_SRC
 
+* Startup
+  #+BEGIN_SRC emacs-lisp
+  #+END_SRC
+
+
 * Themes and Fonts
   This section outlines some additional functions and macros that are useful for configuring Emacs.
-
-  - ~load!'~: Used for loading external ~*.el~ files relative to the current file.
-  - ~use-package!'~: For configuring packages within Emacs.
-  - ~after!'~: Allows running code after a package has loaded.
-  - ~add-load-path!'~: Adds directories to the ~load-path~, relative to the current file. Emacs searches the ~load-path~ when loading packages with ~require~ or ~use-package~.
-  - ~map!'~: Used for binding new keys.
-
   #+BEGIN_SRC emacs-lisp
 ;; themes
-(setq doom-theme 'doom-spacegrey)
-    ;; Set a custom font. Font choice can be important for performance.
-(setq doom-font (font-spec :family "JetBrains Mono" :size 15 :weight 'light))
-;; doom-themes
-(after! doom-themes
-  (setq doom-themes-enable-bold t
-        doom-themes-enable-italic t))
-(custom-set-faces!
-  '(font-lock-comment-face :slant italic)
-  '(font-lock-keyword-face :slant italic))
+(setq font (font-spec :family "JetBrains Mono" :size 15 :weight 'light))
   #+END_SRC
+
+* Packages
+  ** Package Management
+#+BEGIN_SRC emacs-lisp
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(package-initialize)
+
+(unless (package-installed-p 'use-package)
+   (package-refresh-contents)
+   (package-install 'use-package))
+
+(eval-when-compile
+  (require 'use-package))
+#+END_SRC
+
+  ** evil mode
+  #+BEGIN_SRC emacs-lisp
+(use-package evil
+  :demand t
+
+  :custom
+  (evil-esc-delay 0.001 "avoid ESC/meta mixups")
+  (evil-shift-width 4)
+  (evil-search-module 'evil-search)
+
+  :bind (:map evil-normal-state-map
+         ("S" . replace-symbol-at-point))
+
+  :config
+  ;; Enable evil-mode in all buffers.
+  (evil-mode 1))
+  #+END_SRC
+
 
 * Org
   #+BEGIN_SRC emacs-lisp
-(after! org
   (setq org-agenda-custom-commands
         '(("g" "Get Things Done (GTD)"
            ((tags "-projects/+NEXT|+INPROGRESS"
@@ -125,7 +148,7 @@ This document contains my personal configuration for Vanilla Emacs.
      (interactive)
      (progn
         (display-buffer (get-buffer-create org-roam-buffer))
-        (org-roam-buffer-persistent-redisplay)))
+        (org-roam-buffer-persistent-redisplay))
   #+END_SRC
 
 
