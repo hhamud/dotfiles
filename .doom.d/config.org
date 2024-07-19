@@ -266,6 +266,17 @@ If the new month starts in the middle of the week, start on that day until the l
         (insert (format "#+TITLE: %s" (file-name-base file-path)))
         (newline)
         (hhamud/org-review-calender-template)))))
+
+(defun hhamud/weekly-capture-path ()
+  "Weekly todo capture path"
+  (expand-file-name (format "%s/weekly-review.org" (hhamud/path-builder))))
+
+
+(setq org-capture-templates
+      '(("e" "email" entry (file+olp (lambda () (hhamud/weekly-capture-path)) "What are my goals?:")
+         "** TODO [#A] %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n%a\n")))
+
+
   #+END_SRC
 
 
@@ -546,6 +557,8 @@ If the new month starts in the middle of the week, start on that day until the l
 
 ;; don't keep message buffers around
 (setq message-kill-buffer-on-exit t)
+
+
 #+end_src
 
 
